@@ -59,14 +59,18 @@ def query(qhost=None):
 		if html==None:#网关异常直接换其他网关
 			continue
 		else:
-			flow=find(html,"flow='")
-			uid=find(html,"uid='")
-			fee=find(html,"fee='")
-			result={'uid':uid,'fee':fee,'flow':flow}
+			uid  = find(html,"uid='")
+			flow = find(html,"flow='")
+			flow = int(flow) if flow else 0
+			fee  = find(html,"fee='")
+			fee  = int(fee) if flow else 0 
+
+			result={'uid':uid,'fee':fee,'flow':flow/1024}
 			if uid!=None:#查询到登录ID返回
 				return result
 			else:
 				continue
+				
 	return result
 
 #登录
