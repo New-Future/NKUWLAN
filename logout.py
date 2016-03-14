@@ -3,4 +3,4 @@
 #coding:utf-8
 import gateway
 gateway.logout()
-print '已注销'
+print '已注销[logout success!]'
