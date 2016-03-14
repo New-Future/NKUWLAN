@@ -83,6 +83,7 @@ def auto(user, pwd):  # 自动登陆
             return True
     else:
         print 'ONLine: ', result
+        return True
 
 if __name__ == '__main__':
     cmd = len(sys.argv) > 1 and sys.argv[1]
