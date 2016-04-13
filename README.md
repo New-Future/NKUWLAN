@@ -2,8 +2,8 @@
 南开网关登录脚本
 
 ## 其他图形化版本
-* Android 版 (https://github.com/NKMSC/NKUWLAN-Android)[https://github.com/NKMSC/NKUWLAN-Android]
-* Windows GUI (https://github.com/NKMSC/NKUWLAN-Desktop)[https://github.com/NKMSC/NKUWLAN-Desktop]
+* Android 版 [https://github.com/NKMSC/NKUWLAN-Android](https://github.com/NKMSC/NKUWLAN-Android)
+* Windows GUI [https://github.com/NKMSC/NKUWLAN-Desktop](https://github.com/NKMSC/NKUWLAN-Desktop)
 
 ## 单文件
 
