@@ -92,9 +92,12 @@ if __name__ == '__main__':
         print "Logout!"
     else:
         print "NKU GATEWAY auto login"
-        account = account or raw_input("input username [student id]:")
-        password = password or getpass.getpass("input password [no display]:")
-        print 'start!\n\r'
-        while cmd or not auto(account, password):
-            print time.ctime()
-            time.sleep(cir_time)  # 每隔cir_time秒循环一次
+        info = query()
+	if info:
+		print 'Alredy login:',info
+	else:
+		account = account or raw_input("input username [student id]:")
+       		password = password or getpass.getpass("input password [no display]:")
+       		while cmd or not auto(account, password):
+           		print time.ctime()
+            		time.sleep(cir_time)  # 每隔cir_time秒循环一次

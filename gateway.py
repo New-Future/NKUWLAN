@@ -64,8 +64,8 @@ def query(qhost=None):
 			flow = int(flow) if flow else 0
 			fee  = find(html,"fee='")
 			fee  = int(fee) if flow else 0 
-
-			result={'uid':uid,'fee':fee,'flow':flow/1024}
+			ipv4 = find(html,"v4ip='")
+			result={'uid':uid,'fee':fee,'flow':flow/1024,'ipv4':ipv4}
 			if uid!=None:#查询到登录ID返回
 				return result
 			else:
