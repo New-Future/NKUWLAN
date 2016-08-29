@@ -4,7 +4,8 @@
 ## 临时使用
 - *nix使用
 ```bash
-curl https://raw.githubusercontent.com/NewFuture/NKU-Gateway/master/single.py -#o single.py && chmod +x single.py && ./single.py
+curl -#L https://raw.githubusercontent.com/NewFuture/NKUWLAN/build/nkuwlan.py && chmod +x nkulan.py
+python nkuwlan.py
 ```
 - windows
 
