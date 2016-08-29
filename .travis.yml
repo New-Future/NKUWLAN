@@ -2,10 +2,10 @@ language: python
 
 env:
  global:
-  - GH_REF: github.com/NewFuture/NKU_WLAN.git
+  - GH_REF: github.com/NewFuture/NKUWLAN.git
 
 script:
-  - git clone -b build "https://${GH_TOKEN}@${GH_REF}" build
+  - git clone --depth=1 -b build "https://${GH_REF}" build
   - python build.py build/nkuwlan.py
 
 after_script:
@@ -14,7 +14,7 @@ after_script:
   - git config user.name "New Future (auto build)"
   - git config user.email "support@travis-ci.org"
   - git commit -am "Auto Update from master"
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" build:build
+  - git push -f "https://${GH_TOKEN}@${GH_REF}" build:build
 
 branches:
   only:
