@@ -55,9 +55,12 @@ docs/_build/
 
 # PyBuilder
 target/
-nkuwlan.py
+
 .travis.yml
 autologin.py
 build.py
 single.py
 login.py
+.vscode/
+logout.py
+gateway.py
