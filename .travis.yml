@@ -1,0 +1,21 @@
+language: python
+
+env:
+ global:
+  - GH_REF: github.com/NewFuture/NKU_WLAN.git
+
+script:
+  - git clone -b build "https://${GH_TOKEN}@${GH_REF}" build
+  - python build.py build/nkuwlan.py
+
+after_script:
+  - cd ./build
+  - chmod +x nkuwlan.py
+  - git config user.name "New Future (auto build)"
+  - git config user.email "support@travis-ci.org"
+  - git commit -am "Auto Update from master"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" build:build
+
+branches:
+  only:
+    - master
