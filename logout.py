@@ -1,6 +1,14 @@
 #!/usr/bin/python
 #encoding=utf-8
 #coding:utf-8
-import gateway
-gateway.logout()
-print '已注销[logout success!]'
+from gateway import *
+
+#START_TAG
+def logoutAccount():
+    logout()
+    print 'logout success![ 校园网已注销 ]'
+
+
+
+if __name__ == '__main__':
+    logoutAccount()

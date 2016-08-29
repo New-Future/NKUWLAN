@@ -20,6 +20,7 @@ query_path='/'
 login_path=':801/eportal/?c=ACSetting&a=Login'
 logout_path=':801/eportal/?c=ACSetting&a=Logout'
 
+NET_ERROR=None
 
 #注销
 def logout():
@@ -37,10 +38,13 @@ def find(content,start,endtag="'"):
 
 #获取网页
 def request(url,data=None):
+	global NET_ERROR
 	try:
+		urllib2.getproxies = lambda: {}
 		req=urllib2.urlopen(url,data)
 		return req.read()
 	except Exception, e:
+		NET_ERROR = e
 		return None
 
 #查询
