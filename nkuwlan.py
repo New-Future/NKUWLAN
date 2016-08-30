@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# build at Mon Aug 29 17:13:50 2016
+# build at Tue Aug 30 03:59:26 2016
+__version__ = '0.1.3'
+
+#include form file [gateway.py] 
 import urllib2
 import urllib
 
@@ -79,6 +82,56 @@ def login(user,pwd):
 		if result!=None and result['uid']!=None:
 			return result
 
+
+#include form file [config.py] 
+import os
+import json
+
+pathlist = [
+    os.path.expanduser('~')+'/.nkuwlan/conf.json',
+    os.path.expanduser('~')+'/.nkuwlan.json',
+    '/etc/nkuwlan/conf.json',
+]
+
+def get_conf_file():
+    for fname in pathlist:
+        if os.path.isfile(fname):
+            return fname
+
+def load_conf():
+    fname=get_conf_file()
+    if fname:
+        try:
+            with open(fname,'r') as configure_file:
+                return json.load(configure_file)
+        except Exception,e:
+            print e
+            return False
+
+
+def save_conf(conf):
+    fname = get_conf_file() or pathlist[0]
+    dir = os.path.dirname(fname)
+    try:
+        if not os.path.exists(dir):
+            os.mkdir(dir,0700)
+        with os.fdopen(os.open(fname, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
+            handle.write(json.dumps(conf))
+            return fname
+    except Exception,e:
+        print "save error",e
+        return False
+
+
+
+def delete_conf(conf):
+    fname = get_conf_file()
+    if fname:
+        os.remove(fname)
+
+
+
+#include form file [login.py] 
 #START_TAG
 import sys
 import socket
@@ -92,9 +145,13 @@ TIMEOUT  = 10   #连接超时时间(s)
 socket.setdefaulttimeout(TIMEOUT)
 
 
-def getAccount(): #获取账号
+def getAccount(autoload=True): #获取账号
     import getpass
-    global account,password 
+    global account,password
+    conf = autoload and load_conf()
+    if conf:
+        account  = conf["username"]
+        password = conf["password"]
     account = account or raw_input("input username [ 学号或账号 ]:")
     password = password or getpass.getpass("input password [ 校园网密码 ]:")
     return login(account,password)
@@ -122,16 +179,17 @@ def auto():  #自动登陆
 def loop(): #循环登录
     import time
     global cir_time,TIMEOUT,account,password
+    if not load_conf():
+        socket.setdefaulttimeout(2)
+        logout()
     
-    socket.setdefaulttimeout(2)
-    logout()
     socket.setdefaulttimeout(3)
     while not getAccount():
         password=None
         print "%s try login fialed!"%account
         print NET_ERROR
     else:
-        print "Login SUCCESS! [登录%s成功]"%account
+        print "Login SUCCESS! [ 登录成功! ]"
     
     socket.setdefaulttimeout(TIMEOUT)
     while True:
@@ -142,18 +200,41 @@ def loop(): #循环登录
             time.sleep(cir_time/5) #每隔cir_time秒执行一次
 
 
+def save():#保存账号
+    conf={
+        "version":__version__,
+        "username":account,
+        "password":password,
+    }
+    result = save_conf(conf)
+    if result:
+        print "saved to %s"%result
+        return True
+    else:
+        print "save failed!"
+        return False
+
+
+#include form file [logout.py] 
 #START_TAG
 def logoutAccount():
+    print "waiting..."
     logout()
     print 'logout success![ 校园网已注销 ]'
 
 
 
+
 if __name__ == "__main__":
-    cmd = len(sys.argv) > 1 and sys.argv[1]
+    cmd = len(sys.argv) > 1 and sys.argv[1].lower()
     if not cmd:
         auto()
-    elif cmd.lower() == "logout":
+    elif cmd == "logout":
         logoutAccount()
-    else:
+    elif cmd == "-s":
+        logoutAccount()
+        if getAccount(False): save()
+    elif cmd == "-v":
+        print "NKUWLAN (python) verison :",__version__
+    else :
         loop()
