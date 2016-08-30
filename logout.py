@@ -5,6 +5,7 @@ from gateway import *
 
 #START_TAG
 def logoutAccount():
+    print "waiting..."
     logout()
     print 'logout success![ 校园网已注销 ]'
 

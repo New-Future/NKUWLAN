@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from gateway import *
+from config import *
 #START_TAG
 import sys
 import socket
@@ -15,9 +16,13 @@ TIMEOUT  = 10   #连接超时时间(s)
 socket.setdefaulttimeout(TIMEOUT)
 
 
-def getAccount(): #获取账号
+def getAccount(autoload=True): #获取账号
     import getpass
-    global account,password 
+    global account,password
+    conf = autoload and load_conf()
+    if conf:
+        account  = conf["username"]
+        password = conf["password"]
     account = account or raw_input("input username [ 学号或账号 ]:")
     password = password or getpass.getpass("input password [ 校园网密码 ]:")
     return login(account,password)
@@ -65,9 +70,24 @@ def loop(): #循环登录
             time.sleep(cir_time/5) #每隔cir_time秒执行一次
 
 
+def save():#保存账号
+    conf={
+        "version":__version__,
+        "username":account,
+        "password":password,
+    }
+    result = save_conf(conf)
+    if result:
+        print "saved to %s"%result
+        return True
+    else:
+        print "save failed!"
+        return False
+
 if __name__ == '__main__':
     print "Login NKUWlan"
     if len(sys.argv) > 1 : account = sys.argv[1]
     if len(sys.argv) > 2 : password = sys.argv[2]
     print "waiting..."
     loop()
+    
