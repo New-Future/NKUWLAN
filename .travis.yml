@@ -7,8 +7,8 @@ env:
  global:
   - GH_REF: "github.com/NewFuture/NKUWLAN.git"
   - BUILD_PATH: "build/"
-  - GIT_COMMITTER_NAME: "From Travis CI"
-  - COMMIT_AUTHOR_EMAIL: "github@newfuture.cc"
+  - NAME: "From Travis CI"
+  - EMAIL: "github@newfuture.cc"
   - emojis: "(🐶 🐺 🐱 🐭 🐹 🐰 🐸 🐯 🐨 🐻 🐷 🐮 🐵 🐼 🐧 🐍 🐢 🐙 🐠 🐳 🐬 🐥)"
 
 before_script:
@@ -20,8 +20,10 @@ script:
   - python -m py_compile ${BUILD_PATH}nkuwlan.py
 
 after_success:
+  - echo $RSAKEY>~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
   - cd  ${BUILD_PATH}
-  - git commit -am "${emojis[$RANDOM % 22]} Auto Update from master"
+  - git commit -am "${emojis[$RANDOM % 22]} Auto build from master" --author="$NAME <$EMAIL>"
   - git push -f "https://${GH_TOKEN}@${GH_REF}" build:build
 
 branches:
