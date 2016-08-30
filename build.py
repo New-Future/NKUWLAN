@@ -10,20 +10,21 @@ header = '''\
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # build at {buildtime}
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 '''
 
 main = '''
 if __name__ == "__main__":
-    cmd = len(sys.argv) > 1 and sys.argv[1]
+    cmd = len(sys.argv) > 1 and sys.argv[1].lower()
     if not cmd:
         auto()
-    elif cmd.lower() == "logout":
+    elif cmd == "logout":
         logoutAccount()
-    elif cmd.lower() == "-s":
+    elif cmd == "-s":
         logoutAccount()
-        if getAccount(False):
-            save()
+        if getAccount(False): save()
+    elif cmd == "-v":
+        print "NKUWLAN (python) verison :",__version__
     else :
         loop()
 '''
@@ -43,7 +44,7 @@ def INCLUDE(output,filename,start_tag="import",end_tag="if __name__ == '__main__
                 output.write(line)
 
 if __name__ == '__main__':
-    output_file=  len(sys.argv) > 1 and sys.argv[1] or 'nkulwan.py'
+    output_file=  len(sys.argv) > 1 and sys.argv[1] or 'nkuwlan.py'
     print "building to: [%s] ..."%output_file
     output= open(output_file,'w')
     output.write(header.format(buildtime=time.ctime()))

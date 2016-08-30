@@ -50,16 +50,17 @@ def auto():  #自动登陆
 def loop(): #循环登录
     import time
     global cir_time,TIMEOUT,account,password
+    if not load_conf():
+        socket.setdefaulttimeout(2)
+        logout()
     
-    socket.setdefaulttimeout(2)
-    logout()
     socket.setdefaulttimeout(3)
     while not getAccount():
         password=None
         print "%s try login fialed!"%account
         print NET_ERROR
     else:
-        print "Login SUCCESS! [登录%s成功]"%account
+        print "Login SUCCESS! [ 登录成功! ]"
     
     socket.setdefaulttimeout(TIMEOUT)
     while True:

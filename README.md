@@ -1,39 +1,34 @@
-# NKU-GateWay
+# NKUWLAN
 南开网关登录脚本
 
-## 临时使用
-- *nix使用
+
+## 加入系统命令使用
+
 ```bash
-curl -#L https://raw.githubusercontent.com/NewFuture/NKUWLAN/build/nkuwlan.py && chmod +x nkulan.py
+sudo curl https://raw.githubusercontent.com/NewFuture/NKUWLAN/build/nkuwlan.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan
+
+# 保存登录账号
+nkuwlan -s
+#自动登录
+nkuwlan
+#注销
+nkuwlan logout
+
+```
+## 临时使用
+```bash
+curl https://raw.githubusercontent.com/NewFuture/NKUWLAN/build/nkuwlan.py -#Lo nkuwlan.py
 python nkuwlan.py
 ```
-- windows
+
 
 ## 其他图形化版本
 * Android 版 [https://github.com/NKMSC/NKUWLAN-Android](https://github.com/NKMSC/NKUWLAN-Android)
 * Windows GUI [https://github.com/NKMSC/NKUWLAN-Desktop](https://github.com/NKMSC/NKUWLAN-Desktop)
 
-## 用法
 
 
-
-* 登录
-```
-python single.py 
-```
-
-* 注销
-```
-python single.py logout
-```
-
-* 循环登录【断网重连】
-```
-python single.py loop
-```
-
-
-## 多文件【会改代码的用这个】
+## 多文件【将账号密码编译成二进制】
 
 * 修改`autologin.py`第七行八行的账号和密码
 * 自动登录(掉线重连)
