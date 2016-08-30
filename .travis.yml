@@ -5,14 +5,15 @@ git:
 
 env:
  global:
-  - GH_REF: "github.com/NewFuture/NKUWLAN.git"
+  - GH_REF: "NewFuture/NKUWLAN.git"
   - BUILD_PATH: "build/"
   - NAME: "From Travis CI"
   - EMAIL: "github@newfuture.cc"
-  - emojis: "(🐶 🐺 🐱 🐭 🐹 🐰 🐸 🐯 🐨 🐻 🐷 🐮 🐵 🐼 🐧 🐍 🐢 🐙 🐠 🐳 🐬 🐥)"
 
 before_script:
-  - git clone --depth=1 -b build "https://${GH_REF}"  ${BUILD_PATH}
+  - echo $ID_RSA>~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - git clone --depth=1 -b build "git@github.com:${GH_REF}"  ${BUILD_PATH}
 
 script:
   - python build.py ${BUILD_PATH}nkuwlan.py
@@ -20,11 +21,9 @@ script:
   - python -m py_compile ${BUILD_PATH}nkuwlan.py
 
 after_success:
-  - echo $RSAKEY>~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - cd  ${BUILD_PATH}
-  - git commit -am "${emojis[$RANDOM % 22]} Auto build from master" --author="$NAME <$EMAIL>"
-  - git push -f "https://${GH_TOKEN}@${GH_REF}" build:build
+  - git config user.name "$NAME" && git config user.email "$EMAIL"
+  - git commit -am "$(curl -sL https://newfuture.github.io/emoji/e.sh|bash) Auto build from master $(curl -sL https://newfuture.github.io/emoji/e.sh|bash)"
+  - git push -f "git@github.com:${GH_REF}" build:build
 
 branches:
   only:
