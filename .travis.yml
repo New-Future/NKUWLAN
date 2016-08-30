@@ -10,9 +10,9 @@ script:
 
 after_script:
   - cd ./build
-  - git config user.name "New Future (auto build)"
-  - git config user.email "github@newfuture.cc"
-  - git commit -am "Auto Update from master"
+  - git config user.name "New Future (auto build)" && git config user.email "github@newfuture.cc"
+  - emojis=(🐶 🐺 🐱 🐭 🐹 🐰 🐸 🐯 🐨 🐻 🐷 🐮 🐵 🐼 🐧 🐍 🐢 🐙 🐠 🐳 🐬 🐥)
+  - git commit -am "${emojis[$RANDOM % 22]} Auto Update from master"
   - git push -f "https://${GH_TOKEN}@${GH_REF}" build:build
 
 branches:
