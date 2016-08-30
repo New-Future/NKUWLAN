@@ -6,8 +6,9 @@
 
 ```bash
 sudo curl https://raw.githubusercontent.com/NewFuture/NKUWLAN/build/nkuwlan.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan
-
-# 保存登录账号
+```
+```bash
+# 添加登录账号
 nkuwlan -s
 #自动登录
 nkuwlan
