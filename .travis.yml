@@ -11,8 +11,7 @@ env:
   - EMAIL: "github@newfuture.cc"
 
 before_script:
-  - echo $ID_RSA>~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
+  - echo $ID_RSA >t.rsa && base64 -d t.rsa>~/.ssh/id_rsa && rm t.rsa && chmod 600 ~/.ssh/id_rsa
   - git clone --depth=1 -b build "git@github.com:${GH_REF}"  ${BUILD_PATH}
 
 script:
