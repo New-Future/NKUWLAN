@@ -20,6 +20,7 @@ script:
   - python -m py_compile ${BUILD_PATH}nkuwlan.py
 
 after_success:
+  - cd ${BUILD_PATH} && eval $(ssh-agent)
   - git config user.name "$NAME" && git config user.email "$EMAIL"
   - git commit -am "$(curl -sL https://newfuture.github.io/emoji/e.sh|bash) Auto build from master $(curl -sL https://newfuture.github.io/emoji/e.sh|bash)"
   - git push -f "git@github.com:${GH_REF}" build:build
