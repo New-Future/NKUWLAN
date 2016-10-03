@@ -13,7 +13,7 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/NewFuture/NKU-Gateway">View on GitHub</a>
+          <a id="forkme_banner" href="https://github.com/NewFuture/NKUWLAN">View on GitHub</a>
           <h1 id="project_title">NKU_WLAN Project</h1>
           <h2 id="project_tagline">南开网关登录管理工具 (tools for nankai gateway NKU_WLAN)</h2>
         </header>
@@ -33,7 +33,7 @@
   <a href="http://static.newfuture.cc/NKU_WLAN.apk"><strong>最新Android版</strong>(alpha)下载</a><br/>
   所有版本 https://github.com/NKMSC/NKUWLAN-Android/releases
 </li>
-<li><strong>Python通用脚本</strong> <br/>所有版本：<a href="https://github.com/NewFuture/NKU-Gateway/releases/">https://github.com/NewFuture/NKU-Gateway/releases/</a>
+<li><strong>Python通用脚本</strong> <br/>所有版本：<a href="https://github.com/NewFuture/NKUWLAN/releases/">https://github.com/NewFuture/NKUWLAN/releases/</a>
 </li>
 </ul>
 
@@ -42,21 +42,19 @@
 <a id="通用python脚本" class="anchor" href="#%E9%80%9A%E7%94%A8python%E8%84%9A%E6%9C%AC" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>通用python脚本</h3>
 
 <ul>
-<li>提供单文件登录版(single.py)，可以在linux,macos，和windows(需要python 环境) 上运行，方便拷贝和在服务器上运行</li>
-<li>提供网关登录查询库(gateway.py),可以引用和嵌入你的python项目当中</li>
+<li>编译单文件登录版(<a href="nkuwlan.py">nkuwlan.py</a>)，可以在linux,macos，和windows(需要python 环境) 上运行，方便拷贝和在服务器上运行</li>
+<li>提供网关登录查询库(nkuwlan/gateway.py),可以引用和嵌入你的python项目当中</li>
 </ul>
 
 <h5>
 <a id="用法" class="anchor" href="#%E7%94%A8%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>用法</h5>
 
 <ul>
-<li>登录<code>python single.py</code>
-</li>
-<li>注销<code>python single.py logout</code>
-</li>
-<li>循环登录【断网重连】<code>python single.py loop</code>
-</li>
-<li>配置好autologin.py的账号后台自动登录<code>nohup python autologin.py &amp;</code>
+  <li>加入系统命令 <code>sudo curl http://nkuwlan.newfuture.cc/min.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan</code></li>
+<li>添加账号<code>nkuwlan -s</code></li>
+<li>登录网关<code>nkuwlan</code></li>
+<li>注销网关<code>nkuwlan logout</code></li>
+<li>循环登录【断网重连】<code>nkuwlan loop</code></li>
 </li>
 </ul>
 <hr/>
@@ -96,7 +94,7 @@
 
 <ul>
 <li>
-<a href="https://github.com/NewFuture/NKU-Gateway/">NKU-Gateway</a> 通用python脚本,由<a href="https://github.com/NewFuture" class="user-mention">@NewFuture</a>创建</li>
+<a href="https://github.com/NewFuture/NKUWLAN/">NKUWLAN</a> 通用python脚本,由<a href="https://github.com/NewFuture" class="user-mention">@NewFuture</a>创建</li>
 <li>
 <a href="https://github.com/NKMSC/NKUWLAN-Desktop/">NKUWLAN-Desktop</a> 桌面版，由<a href="https://github.com/NewFuture" class="user-mention">@NewFuture</a>创建,由<a href="https://github.com/NKMSC" class="user-mention">@NKMSC</a>维护 </li>
 <li>
