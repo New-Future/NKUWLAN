@@ -9,14 +9,19 @@
 '/etc/nkuwlan/conf.json'#系统全局有效
 文件权限0600
 '''
-__version__ = '1.0.0'
+# TODO 自动更新配置
+
+__version__ = '1.1.0'
 __author__ = 'New Future'
-__all__ = ["get_conf_file", "load_conf", "save_conf", "delete_conf"]
+__all__ = ["load_conf", "save_conf", "delete_conf"]
 
 import os
 import json
 import sys
 import base64
+import hashlib
+import uuid
+import time
 from distutils.version import StrictVersion
 
 pathlist = [
@@ -25,83 +30,181 @@ pathlist = [
     '/etc/nkuwlan/conf.json',
 ]
 
-# 获取配置文件
 
+def load_conf(fname=None):
+    """load config form the config file.
 
-def get_conf_file():
-    for fname in pathlist:
-        if os.path.isfile(fname):
-            return fname
+     从文件(json格式)中读取配置,并根据版本对密码解密和校验
+     如果文件中不包含版本信息不对密码解密
 
-# 读取配置
+    Args:
+        fname: 文件名(配置的json文件)，如果不指定会尝试系统默认的文件列表 pathlist
 
+    Returns:
+        包含配置信息的字典;
+        如果配置不存在返回None;
+        如果加载出错返回False;
 
-def load_conf():
-    fname = get_conf_file()
+    Raises:
+
+    """
+    fname = get_conf_file(fname)
     if fname:
         try:
             with open(fname, 'r') as configure_file:
                 conf = json.load(configure_file)
-                conf["password"] = decode(conf['username'], conf[
-                                          'password'], conf['version'])
+                if "version" in conf:  # 包含version 解密
+                    conf["password"] = decode(conf, fname)
+                    if not conf["password"]:
+                        return False
                 return conf
         except Exception as e:
             print('load config failed: %s' % e)
             return False
 
-# 保存配置
 
+def save_conf(conf, fname=None):  # 保存配置
+    """save config to the config file.
 
-def save_conf(conf):
-    fname = get_conf_file() or pathlist[0]
+     保存配置到文件，并对密码加密
+
+    Args:
+        conf：配置字典包括"username"和"password"
+        fname: 保存的文件名绝对路径(json)，如果不指定会尝试系统默认的文件列表 pathlist
+
+    Returns:
+        fname: 保存成功返回文件名
+        False： 保存出错
+
+    Raises:
+
+    """
+
+    fname = get_conf_file(fname) or pathlist[0]
     dir = os.path.dirname(fname)
     try:
         if not os.path.exists(dir):
             os.mkdir(dir, 0o700)
-        with os.fdopen(os.open(fname, os.O_WRONLY | os.O_TRUNC | os.O_CREAT, 0o600), 'w') as handle:
-            conf['version'] = __version__
-            conf["password"] = encode(conf['username'], conf[
-                                      'password'], conf['version'])
-            handle.write(json.dumps(conf))
-            return fname
+        if not os.path.isfile(fname):
+            if os.name == 'nt':  # windows
+                open(fname, 'w').close()
+            else:
+                os.mknod(fname, 0o600)
+
+        conf['version'] = __version__
+        conf["password"], atime, mtime = encode(conf, fname)
+
+        with open(fname, 'w') as f:
+            f.write(json.dumps(conf))
+        os.utime(fname, (atime, mtime))  # 跟新文件校验时间戳
+        return fname
+
     except Exception as e:
         print("save error: %s" % e)
         return False
 
-# 删除配置文件
 
+def delete_conf(fname=None):  # 删除配置文件
+    """delete config file.
 
-def delete_conf(conf):
-    fname = get_conf_file()
+    删除配置文件
+
+    Args:
+        fname: 保存的文件名绝对路径(json)，如果不指定会尝试系统默认的文件列表 pathlist
+
+    Returns:
+        fname: 删除的文件名
+        False： 无可删除配置文件
+
+    Raises:
+    """
+    fname = get_conf_file(fname)
     if fname:
         os.remove(fname)
+        return fname
 
-# 加密
+
+def get_conf_file(fname=None):  # 获取配置文件
+    if fname:
+        return fname
+    for fname in pathlist:
+        if os.path.isfile(fname):
+            return fname
 
 
-def encode(key, pwd, version=None):
+def encode(conf, path):  # 加密
+    h = key_info(path)
+    atime, mtime = round(time.time()) + 10, round(h['ctime'])  # 修改文件时间
+    h['atime'], h['mtime'] = float(atime), float(mtime)
+    key, start, end = key_gen(h, conf['username'])
+
+    pwd = start + conf['password'] + end
     enc = []
     for i in range(len(pwd)):
         key_c = key[i % len(key)]
         enc_c = chr((ord(pwd[i]) + ord(key_c)) % 256)
         enc.append(enc_c)
     enc = "".join(enc)
-    if sys.version_info[0] == 3:
+    if sys.version_info[0] == 3:  # for python 3
         enc = enc.encode()
-    return base64.urlsafe_b64encode(enc).decode()
+    enc = base64.urlsafe_b64encode(enc).decode()
 
-# 解密
+    return [enc, atime, mtime]
 
 
-def decode(key, enc, version=None):
-    if StrictVersion(version) < StrictVersion('1.0.0'):
-        return enc
-    dec = []
-    enc = base64.urlsafe_b64decode(enc.encode())
+def decode(conf, path):  # 解密
+    if StrictVersion(conf['version']) < StrictVersion('1.0.0'):
+        return conf['password']
+    # 计算唯一加密密钥
+    h = key_info(path)
+    key, start, end = key_gen(h, conf['username'])
+
+    # 加密后密码
+    enc = conf['password'].encode()
+    enc = base64.urlsafe_b64decode(enc)
     if sys.version_info[0] == 3:
         enc = enc.decode()
+
+    dec = []
     for i in range(len(enc)):
         key_c = key[i % len(key)]
         dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
         dec.append(dec_c)
-    return "".join(dec)
+    dec = "".join(dec)  # 解密后的密码
+
+    # print (dec)
+    # 校验
+    if dec.startswith(start) and dec.endswith(end):
+        return dec[len(start):-len(end)]
+    else:  # 校验失败
+        print("\nThe config file verification failed！\n配置文件校验失败!\n您的配置文件可能已被人偷窥或修改!(放心密码已特殊加密)\nWARN:为了保证账户安全,修改或者移动配置文件均会导致密钥失效!")
+        return False
+
+
+def key_info(fname):  # 获取每台机器唯一的加密密钥和验证key
+    import uuid
+    stats = os.stat(fname)  # 文件属性
+    m = {
+        'path': fname,  # 文件路径hash
+        'mac': uuid.getnode(),  # MAC地址
+        'mode': stats.st_mode,
+        'inode': stats.st_ino,
+        'device': stats.st_dev,
+        'nlink': stats.st_nlink,
+        'user': stats.st_uid,
+        'group': stats.st_gid,
+        'ctime': stats.st_ctime,
+        'atime': stats.st_atime,
+        'mtime': stats.st_mtime,
+    }
+    return m
+
+
+def key_gen(h, username):  # 生密钥和首尾校验码
+    h['ctime'] = 0  # ctime always change
+    # print (repr(sorted(h.items())))
+    h = hashlib.md5(repr(sorted(h.items())).encode('utf-8')).hexdigest()
+    key = hashlib.sha512((username + h).encode('utf-8')).hexdigest()
+    hi = str(int(h, 16))
+    start, end = h[:int(hi[3])], h[-int(hi[-1]):]
+    return [key, start, end]
