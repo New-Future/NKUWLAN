@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #encoding=utf-8
 #coding:utf-8
-from gateway import *
+from nkuwlan.gateway import *
 
 #START_TAG
 def logoutAccount():

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from gateway import *
-from config import *
+from nkuwlan.gateway import *
+from nkuwlan.config import *
 #START_TAG
 import sys
 import socket
@@ -58,7 +58,7 @@ def loop(): #循环登录
     while not getAccount():
         password=None
         print "%s try login fialed!"%account
-        print NET_ERROR
+        print error()
     else:
         print "Login SUCCESS! [ 登录成功! ]"
     

@@ -11,17 +11,19 @@ env:
   - EMAIL: "github@newfuture.cc"
 
 before_script:
-  - echo $ID_RSA >t.rsa && base64 -d t.rsa>~/.ssh/id_rsa && rm t.rsa && chmod 600 ~/.ssh/id_rsa
-  - git clone --depth=1 -b build "git@github.com:${GH_REF}"  ${BUILD_PATH}
+  - echo $ID_RSA>t.rsa &&base64 -d t.rsa>~/.ssh/id_rsa &&rm t.rsa &&chmod 600 ~/.ssh/id_rsa
+  - git clone --depth=1 -b build "git@github.com:${GH_REF}" ${BUILD_PATH}
+  - pip install minipy-ppf
 
 script:
   - python build.py ${BUILD_PATH}nkuwlan.py
   # compile to check syntax
   - python -m py_compile ${BUILD_PATH}nkuwlan.py
-
+  - minipy -D -R --noselftest -o ${BUILD_PATH}min.py ${BUILD_PATH}nkuwlan.py
+  
 after_success:
-  - cd ${BUILD_PATH} && eval $(ssh-agent)
-  - git config user.name "$NAME" && git config user.email "$EMAIL"
+  - cd ${BUILD_PATH} &&eval $(ssh-agent)
+  - git config user.name "$NAME" &&git config user.email "$EMAIL"
   - git commit -am "$(curl -sL https://newfuture.github.io/emoji/e.sh|bash) Auto build from master $(curl -sL https://newfuture.github.io/emoji/e.sh|bash)"
   - git push -f "git@github.com:${GH_REF}" build:build
 

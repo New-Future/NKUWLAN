@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #encoding=utf-8
 #coding:utf-8
-import gateway
+import nkuwlan.gateway as gateway
 import time
 import socket
 
