@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <title>NKU_WLAN 自动登录管理工具</title>
   </head>
-
   <body>
 
     <!-- HEADER -->
@@ -42,15 +41,15 @@
 <a id="通用python脚本" class="anchor" href="#%E9%80%9A%E7%94%A8python%E8%84%9A%E6%9C%AC" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>通用python脚本</h3>
 
 <ul>
-<li>编译单文件登录版(<a href="nkuwlan.py">nkuwlan.py</a>)，可以在linux,macos，和windows(需要python 环境) 上运行，方便拷贝和在服务器上运行</li>
+<li>编译单文件登录版(<a href="code/nkuwlan.py">nkuwlan.py</a>)，可以在linux,macos，和windows(需要python 环境) 上运行，方便拷贝和在服务器上运行</li>
+<li>单文件压缩版(<a href="code/min.py">min.py</a> 大约4kB)可方便的添加到系统命令目录</li>
 <li>提供网关登录查询库(nkuwlan/gateway.py),可以引用和嵌入你的python项目当中</li>
 </ul>
 
-<h5>
-<a id="用法" class="anchor" href="#%E7%94%A8%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>用法</h5>
+<h5><a id="用法" class="anchor" href="#%E7%94%A8%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>用法</h5>
 
 <ul>
-  <li>加入系统命令 <code>sudo curl http://nkuwlan.newfuture.cc/min.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan</code></li>
+  <li>加入系统命令 <code>sudo curl http://nkuwlan.newfuture.cc/code/min.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan</code></li>
 <li>添加账号<code>nkuwlan -s</code></li>
 <li>登录网关<code>nkuwlan</code></li>
 <li>注销网关<code>nkuwlan logout</code></li>
