@@ -1,112 +1,144 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# build at Tue Aug 30 12:56:33 2016
-__version__ = '0.1.3'
+__version__ = '1.0.0'
+__author__ = 'New Future'
 
-#include form file [gateway.py] 
+# THIS FILE BUILD AT--- Mon Oct  3 02:00:15 2016
+
+#include form file [nkuwlan/gateway.py] 
 import urllib2
 import urllib
 
-#网关 地址
-host = ['http://202.113.18.110','http://202.113.18.210']
-#url路径
-query_path='/'
-login_path=':801/eportal/?c=ACSetting&a=Login'
-logout_path=':801/eportal/?c=ACSetting&a=Logout'
+# 网关 地址
+host = ['http://202.113.18.110', 'http://202.113.18.210']
+# url路径
+query_path = '/'
+login_path = ':801/eportal/?c=ACSetting&a=Login'
+logout_path = ':801/eportal/?c=ACSetting&a=Logout'
 
-NET_ERROR=None
+NET_ERROR = None
 
-#注销
+# 注销
+
+
 def logout():
-	for h in host:
-		request(h+logout_path)
+    for h in host:
+        request(h + logout_path)
 
-#查找
-def find(content,start,endtag="'"):
-	p=content.find(start)
-	if p>0:
-		content=content[len(start)+p:]
-		end=content.find(endtag)
-		f=content[:end];
-		return f.strip()
+# 查找
 
-#获取网页
-def request(url,data=None):
-	global NET_ERROR
-	try:
-		urllib2.getproxies = lambda: {}
-		req=urllib2.urlopen(url,data)
-		return req.read()
-	except Exception, e:
-		NET_ERROR = e
-		return None
 
-#查询
+def find(content, start, endtag="'"):
+    p = content.find(start)
+    if p > 0:
+        content = content[len(start) + p:]
+        end = content.find(endtag)
+        f = content[:end]
+        return f.strip()
+
+# 获取网页
+
+
+def request(url, data=None):
+    global NET_ERROR
+    try:
+        urllib2.getproxies = lambda: {}
+        req = urllib2.urlopen(url, data)
+        return req.read()
+    except Exception as e:
+        NET_ERROR = e
+        return None
+
+# 查询
+
+
 def query(qhost=None):
-	#主机列表
-	if qhost==None:
-		hostList=host
-	elif type(qhost) is str:
-		hostList=[qhost]
-	else:
-		hostList=qhost
-	#逐个查询直到命中
-	result=None
-	for h in hostList:
-		html=request(h)
-		if html==None:#网关异常直接换其他网关
-			continue
-		else:
-			uid  = find(html,"uid='")
-			flow = find(html,"flow='")
-			flow = int(flow) if flow else 0
-			fee  = find(html,"fee='")
-			fee  = int(fee) if flow else 0 
-			ipv4 = find(html,"v4ip='")
-			result={'uid':uid,'fee':fee,'flow':flow/1024,'ipv4':ipv4}
-			if uid!=None:#查询到登录ID返回
-				return result
-			else:
-				continue
-				
-	return result
+    # 主机列表
+    if qhost == None:
+        hostList = host
+    elif type(qhost) is str:
+        hostList = [qhost]
+    else:
+        hostList = qhost
+    # 逐个查询直到命中
+    result = None
+    for h in hostList:
+        html = request(h)
+        if html == None:  # 网关异常直接换其他网关
+            continue
+        else:
+            uid = find(html, "uid='")
+            flow = find(html, "flow='")
+            flow = int(flow) if flow else 0
+            fee = find(html, "fee='")
+            fee = int(fee) if flow else 0
+            ipv4 = find(html, "v4ip='")
+            result = {'uid': uid, 'fee': fee,
+                      'flow': flow / 1024, 'ipv4': ipv4}
+            if uid != None:  # 查询到登录ID返回
+                return result
+            else:
+                continue
 
-#登录
-def login(user,pwd):
-	data={'DDDDD':user,'upass':pwd}
-	data=urllib.urlencode(data)
-	for h in host:
-		url=h+login_path
-		request(url,data)
-		result=query(h)
-		if result!=None and result['uid']!=None:
-			return result
+    return result
+
+# 登录
 
 
-#include form file [config.py] 
+def login(user, pwd):
+    data = {'DDDDD': user, 'upass': pwd}
+    data = urllib.urlencode(data)
+    for h in host:
+        url = h + login_path
+        request(url, data)
+        result = query(h)
+        if result != None and result['uid'] != None:
+            return result
+# 获取错误信息
+
+
+def error():
+    return NET_ERROR
+
+
+#include form file [nkuwlan/config.py] 
 import os
 import json
+import sys
+import base64
+from distutils.version import StrictVersion
 
 pathlist = [
-    os.path.expanduser('~')+'/.nkuwlan/conf.json',
-    os.path.expanduser('~')+'/.nkuwlan.json',
+    os.path.expanduser('~') + '/.nkuwlan/conf.json',
+    os.path.expanduser('~') + '/.nkuwlan.json',
     '/etc/nkuwlan/conf.json',
 ]
+
+# 获取配置文件
+
 
 def get_conf_file():
     for fname in pathlist:
         if os.path.isfile(fname):
             return fname
 
+# 读取配置
+
+
 def load_conf():
-    fname=get_conf_file()
+    fname = get_conf_file()
     if fname:
         try:
-            with open(fname,'r') as configure_file:
-                return json.load(configure_file)
-        except Exception,e:
-            print e
+            with open(fname, 'r') as configure_file:
+                conf = json.load(configure_file)
+                conf["password"] = decode(conf['username'], conf[
+                                          'password'], conf['version'])
+                return conf
+        except Exception as e:
+            print('load config failed: %s' % e)
             return False
+
+# 保存配置
 
 
 def save_conf(conf):
@@ -114,14 +146,18 @@ def save_conf(conf):
     dir = os.path.dirname(fname)
     try:
         if not os.path.exists(dir):
-            os.mkdir(dir,0700)
-        with os.fdopen(os.open(fname, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
+            os.mkdir(dir, 0o700)
+        with os.fdopen(os.open(fname, os.O_WRONLY | os.O_TRUNC | os.O_CREAT, 0o600), 'w') as handle:
+            conf['version'] = __version__
+            conf["password"] = encode(conf['username'], conf[
+                                      'password'], conf['version'])
             handle.write(json.dumps(conf))
             return fname
-    except Exception,e:
-        print "save error",e
+    except Exception as e:
+        print("save error: %s" % e)
         return False
 
+# 删除配置文件
 
 
 def delete_conf(conf):
@@ -129,7 +165,35 @@ def delete_conf(conf):
     if fname:
         os.remove(fname)
 
+# 加密
 
+
+def encode(key, pwd, version=None):
+    enc = []
+    for i in range(len(pwd)):
+        key_c = key[i % len(key)]
+        enc_c = chr((ord(pwd[i]) + ord(key_c)) % 256)
+        enc.append(enc_c)
+    enc = "".join(enc)
+    if sys.version_info[0] == 3:
+        enc = enc.encode()
+    return base64.urlsafe_b64encode(enc).decode()
+
+# 解密
+
+
+def decode(key, enc, version=None):
+    if StrictVersion(version) < StrictVersion('1.0.0'):
+        return enc
+    dec = []
+    enc = base64.urlsafe_b64decode(enc.encode())
+    if sys.version_info[0] == 3:
+        enc = enc.decode()
+    for i in range(len(enc)):
+        key_c = key[i % len(key)]
+        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        dec.append(dec_c)
+    return "".join(dec)
 
 #include form file [login.py] 
 #START_TAG
@@ -187,7 +251,7 @@ def loop(): #循环登录
     while not getAccount():
         password=None
         print "%s try login fialed!"%account
-        print NET_ERROR
+        print error()
     else:
         print "Login SUCCESS! [ 登录成功! ]"
     
