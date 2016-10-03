@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '1.1.0'
+__version__ = '1.1.2'
 __author__ = 'New Future'
 
-# THIS FILE BUILD AT--- Mon Oct  3 09:35:34 2016
+# THIS FILE BUILD AT--- Mon Oct  3 12:43:48 2016
 
 #include form file [nkuwlan/gateway.py] 
 import urllib2
@@ -35,37 +35,26 @@ def query(qhost=None):  # 查询
 
     """
     # 主机列表
-    if qhost == None:
-        hostList = host
-    elif type(qhost) is str:
+    if type(qhost) is str:  # 指定主机
         hostList = [qhost]
-    else:
+    elif qhost:  # 数组
         hostList = qhost
+    else:  # 默认
+        hostList = host
     # 逐个查询直到命中
-    result = None
     for h in hostList:
         html = request(h)
-        if html == None:  # 网关异常直接换其他网关
-            continue
-        else:
-            uid = find(html, "uid='")
+        if html:  # 网关异常直接换其他网关
             flow = find(html, "flow='")
-            flow = int(flow) if flow else 0
             fee = find(html, "fee='")
-            fee = int(fee) if flow else 0
-            ipv4 = find(html, "v4ip='")
             result = {
-                'uid': uid,
-                'fee': fee,
-                'flow': flow / 1024,
-                'ipv4': ipv4
+                'fee': fee and int(fee),
+                'flow': flow and int(flow) / 1024,
+                'uid': find(html, "uid='"),
+                'ipv4': find(html, "v4ip='")
             }
-            if uid != None:  # 查询到登录ID返回
+            if result['uid']:  # 查询到登录ID返回
                 return result
-            else:
-                continue
-
-    return result
 
 
 def login(user, pwd):  # 登录
@@ -90,7 +79,7 @@ def login(user, pwd):  # 登录
         url = h + login_path
         request(url, data)
         result = query(h)
-        if result != None and result['uid'] != None:
+        if result and result['uid']:
             return result
 
 
@@ -120,17 +109,14 @@ def find(content, start, endtag="'"):  # 查找
     p = content.find(start)
     if p > 0:
         content = content[len(start) + p:]
-        end = content.find(endtag)
-        f = content[:end]
+        f = content[:content.find(endtag)]
         return f.strip()
 
 
 def request(url, data=None):  # 获取网页
-    global NET_ERROR
     try:
         urllib2.getproxies = lambda: {}
-        req = urllib2.urlopen(url, data)
-        return req.read()
+        return urllib2.urlopen(url, data).read()
     except Exception as e:
         NET_ERROR = e
         return None
@@ -142,14 +128,15 @@ import os
 import json
 import sys
 import base64
-import hashlib
-import uuid
 import time
+from hashlib import sha512
+from uuid import getnode
 from distutils.version import StrictVersion
 
+_user_path = os.path.expanduser('~')
 pathlist = [
-    os.path.expanduser('~') + '/.nkuwlan/conf.json',
-    os.path.expanduser('~') + '/.nkuwlan.json',
+    _user_path + '/.nkuwlan/conf.json',
+    _user_path + '/.nkuwlan.json',
     '/etc/nkuwlan/conf.json',
 ]
 
@@ -257,20 +244,19 @@ def get_conf_file(fname=None):  # 获取配置文件
 
 def encode(conf, path):  # 加密
     h = key_info(path)
-    atime, mtime = round(time.time()) + 10, round(h['ctime'])  # 修改文件时间
-    h['atime'], h['mtime'] = float(atime), float(mtime)
+    atime, mtime = round(time.time()) + 10, round(h['CT'])  # 修改文件时间
+    h['AT'], h['MT'] = float(atime), float(mtime)
     key, start, end = key_gen(h, conf['username'])
 
     pwd = start + conf['password'] + end
     enc = []
     for i in range(len(pwd)):
-        key_c = key[i % len(key)]
-        enc_c = chr((ord(pwd[i]) + ord(key_c)) % 256)
+        enc_c = chr((ord(pwd[i]) + ord(key[i % len(key)])) % 256)
         enc.append(enc_c)
     enc = "".join(enc)
     if sys.version_info[0] == 3:  # for python 3
         enc = enc.encode()
-    enc = base64.urlsafe_b64encode(enc).decode()
+    enc = base64. urlsafe_b64encode(enc).decode()
 
     return [enc, atime, mtime]
 
@@ -290,8 +276,7 @@ def decode(conf, path):  # 解密
 
     dec = []
     for i in range(len(enc)):
-        key_c = key[i % len(key)]
-        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        dec_c = chr((ord(enc[i]) - ord(key[i % len(key)])) % 256)
         dec.append(dec_c)
     dec = "".join(dec)  # 解密后的密码
 
@@ -300,42 +285,39 @@ def decode(conf, path):  # 解密
     if dec.startswith(start) and dec.endswith(end):
         return dec[len(start):-len(end)]
     else:  # 校验失败
-        print("\nThe config file verification failed！\n配置文件校验失败!\n您的配置文件可能已被人偷窥或修改!(放心密码已特殊加密)\nWARN:为了保证账户安全,修改或者移动配置文件均会导致密钥失效!")
+        print("\nconfig file verification failed!")
         return False
 
 
 def key_info(fname):  # 获取每台机器唯一的加密密钥和验证key
-    import uuid
     stats = os.stat(fname)  # 文件属性
-    m = {
-        'path': fname,  # 文件路径hash
-        'mac': uuid.getnode(),  # MAC地址
-        'mode': stats.st_mode,
-        'inode': stats.st_ino,
-        'device': stats.st_dev,
-        'nlink': stats.st_nlink,
-        'user': stats.st_uid,
-        'group': stats.st_gid,
-        'ctime': stats.st_ctime,
-        'atime': stats.st_atime,
-        'mtime': stats.st_mtime,
+    return {
+        'P': fname,  # 文件路径hash
+        'mac': getnode(),  # MAC地址
+        'M': stats.st_mode,
+        'N': stats.st_ino,
+        'D': stats.st_dev,
+        'L': stats.st_nlink,
+        'U': stats.st_uid,
+        'G': stats.st_gid,
+        'CT': stats.st_ctime,
+        'AT': stats.st_atime,
+        'MT': stats.st_mtime,
     }
-    return m
 
 
 def key_gen(h, username):  # 生密钥和首尾校验码
-    h['ctime'] = 0  # ctime always change
+    h['CT'] = 0  # ctime always change
     # print (repr(sorted(h.items())))
-    h = hashlib.md5(repr(sorted(h.items())).encode('utf-8')).hexdigest()
-    key = hashlib.sha512((username + h).encode('utf-8')).hexdigest()
+    h = sha512(repr(sorted(h.items())).encode('utf-8')).hexdigest()
+    key = sha512((username + h).encode('utf-8')).hexdigest()
     hi = str(int(h, 16))
     start, end = h[:int(hi[3])], h[-int(hi[-1]):]
     return [key, start, end]
 
 #include form file [login.py] 
 # START_TAG #
-import sys
-import socket
+from socket import setdefaulttimeout
 
 # 配置
 account = None  # "网关账号[学号]"
@@ -343,27 +325,26 @@ password = None  # 网关登录密码
 cir_time = 60  # 循环时间(s)
 TIMEOUT = 10  # 连接超时时间(s)
 
-socket.setdefaulttimeout(TIMEOUT)
+setdefaulttimeout(TIMEOUT)
 
 
 def getAccount(autoload=True):  # 获取账号
-    import getpass
     global account, password
+    import getpass
     conf = autoload and load_conf()
     if conf:
         account = conf["username"]
         password = conf["password"]
-    account = account or raw_input("input username [ 学号或账号 ]:")
-    password = password or getpass.getpass("input password [ 校园网密码 ]:")
+    else:
+        account = raw_input("input username:")
+        password = getpass.getpass("input password:")
     return login(account, password)
 
 
 def auto():  # 自动登陆
-    global account, password
-
-    socket.setdefaulttimeout(4)
+    setdefaulttimeout(4)
     result = query()
-    socket.setdefaulttimeout(TIMEOUT)
+    setdefaulttimeout(TIMEOUT)
 
     if result and result['uid']:
         print 'ONLine: ', result
@@ -380,21 +361,19 @@ def auto():  # 自动登陆
 
 
 def loop():  # 循环登录
-    import time
-    global cir_time, TIMEOUT, account, password
+    global password
     if not load_conf():
-        socket.setdefaulttimeout(2)
+        setdefaulttimeout(2)
         logout()
 
-    socket.setdefaulttimeout(3)
+    setdefaulttimeout(3)
     while not getAccount():
         password = None
-        print "%s try login fialed!" % account
-        print error()
+        print "%s try login fialed!\n%s" % (account, error())
     else:
-        print "Login SUCCESS! [ 登录成功! ]"
+        print "Login SUCCESS!"
 
-    socket.setdefaulttimeout(TIMEOUT)
+    setdefaulttimeout(TIMEOUT)
     while True:
         print time.ctime()
         if auto():
@@ -405,17 +384,15 @@ def loop():  # 循环登录
 
 def save():  # 保存账号
     conf = {
-        "version": __version__,
         "username": account,
         "password": password,
     }
     result = save_conf(conf)
     if result:
-        print "saved to %s" % result
+        print "saved to " + result
         return True
     else:
         print "save failed!"
-        return False
 
 
 #include form file [logout.py] 
@@ -423,22 +400,23 @@ def save():  # 保存账号
 
 
 def logoutAccount():
-    print "waiting..."
+    print "wait..."
     logout()
-    print 'logout success![ 校园网已注销 ]'
+    print '\nlogout success!'
 
 
 
 if __name__ == "__main__":
-    cmd = len(sys.argv) > 1 and sys.argv[1].lower()
-    if not cmd:
-        auto()
-    elif cmd == "logout":
+    cmd = sys.argv[1:] and sys.argv[1].lower()
+    
+    if cmd == "logout":
         logoutAccount()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
-        print "NKUWLAN (python) verison :",__version__
-    else :
+        print "NKUWLAN verison :",__version__
+    elif cmd:
         loop()
+    else:
+        auto()
