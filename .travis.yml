@@ -7,25 +7,29 @@ env:
  global:
   - GH_REF: "NewFuture/NKUWLAN.git"
   - BUILD_PATH: "build/"
-  - NAME: "From Travis CI"
+  - NAME: "From-Travis-CI"
   - EMAIL: "github@newfuture.cc"
+  - EMOJI: "curl -sL https://newfuture.github.io/emoji/e.sh|bash"
 
 before_script:
   - echo $ID_RSA>t.rsa &&base64 -d t.rsa>~/.ssh/id_rsa &&rm t.rsa &&chmod 600 ~/.ssh/id_rsa
-  - git clone --depth=1 -b build "git@github.com:${GH_REF}" ${BUILD_PATH}
+  - git config --global user.name $NAME
+  - git config --global user.email $EMAIL
+  - git clone -b build "git@github.com:${GH_REF}" ${BUILD_PATH}
   - pip install minipy-ppf
 
 script:
-  - python build.py ${BUILD_PATH}nkuwlan.py
-  # compile to check syntax
-  - python -m py_compile ${BUILD_PATH}nkuwlan.py
-  - minipy -D -R --noselftest -o ${BUILD_PATH}min.py ${BUILD_PATH}nkuwlan.py
-  
+  - ./build.py ${BUILD_PATH}nkuwlan.py && minipy -D -R --noselftest -o ${BUILD_PATH}min.py ${BUILD_PATH}nkuwlan.py
+  - python -m py_compile ${BUILD_PATH}nkuwlan.py  # compile to check syntax
+  - cd ${BUILD_PATH} && eval $(ssh-agent)
+  - git commit -am "$(EMOJI) Auto build from master $(EMOJI)" && git push -f "git@github.com:${GH_REF}" build:build
+
 after_success:
-  - cd ${BUILD_PATH} &&eval $(ssh-agent)
-  - git config user.name "$NAME" &&git config user.email "$EMAIL"
-  - git commit -am "$(curl -sL https://newfuture.github.io/emoji/e.sh|bash) Auto build from master $(curl -sL https://newfuture.github.io/emoji/e.sh|bash)"
-  - git push -f "git@github.com:${GH_REF}" build:build
+  - git checkout gh-pages
+  - git submodule update --init --recursive
+  - git submodule foreach --recursive git pull origin build
+  - git commit -am "$(EMOJI) Auto update git Submodule"
+  - git push "git@github.com:${GH_REF}" gh-pages:gh-pages
 
 branches:
   only:
