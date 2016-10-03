@@ -1,15 +1,15 @@
 #!/usr/bin/python
 # encoding=utf-8
 # coding:utf-8
-from nkuwlan.gateway import *
+from nkuwlan.gateway import logout
 
 # START_TAG #
 
 
 def logoutAccount():
-    print "waiting..."
+    print "wait..."
     logout()
-    print 'logout success![ 校园网已注销 ]'
+    print '\nlogout success!'
 
 
 if __name__ == '__main__':

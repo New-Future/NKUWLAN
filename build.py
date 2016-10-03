@@ -8,18 +8,19 @@ import sys
 
 main = '''
 if __name__ == "__main__":
-    cmd = len(sys.argv) > 1 and sys.argv[1].lower()
-    if not cmd:
-        auto()
-    elif cmd == "logout":
+    cmd = sys.argv[1:] and sys.argv[1].lower()
+    
+    if cmd == "logout":
         logoutAccount()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
-        print "NKUWLAN (python) verison :",__version__
-    else :
+        print "NKUWLAN verison :",__version__
+    elif cmd:
         loop()
+    else:
+        auto()
 '''
 
 

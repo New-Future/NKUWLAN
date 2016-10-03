@@ -11,7 +11,7 @@
 '''
 # TODO 自动更新配置
 
-__version__ = '1.1.0'
+__version__ = '1.1.2'
 __author__ = 'New Future'
 __all__ = ["load_conf", "save_conf", "delete_conf"]
 
@@ -19,14 +19,15 @@ import os
 import json
 import sys
 import base64
-import hashlib
-import uuid
 import time
+from hashlib import sha512
+from uuid import getnode
 from distutils.version import StrictVersion
 
+_user_path = os.path.expanduser('~')
 pathlist = [
-    os.path.expanduser('~') + '/.nkuwlan/conf.json',
-    os.path.expanduser('~') + '/.nkuwlan.json',
+    _user_path + '/.nkuwlan/conf.json',
+    _user_path + '/.nkuwlan.json',
     '/etc/nkuwlan/conf.json',
 ]
 
@@ -134,20 +135,19 @@ def get_conf_file(fname=None):  # 获取配置文件
 
 def encode(conf, path):  # 加密
     h = key_info(path)
-    atime, mtime = round(time.time()) + 10, round(h['ctime'])  # 修改文件时间
-    h['atime'], h['mtime'] = float(atime), float(mtime)
+    atime, mtime = round(time.time()) + 10, round(h['CT'])  # 修改文件时间
+    h['AT'], h['MT'] = float(atime), float(mtime)
     key, start, end = key_gen(h, conf['username'])
 
     pwd = start + conf['password'] + end
     enc = []
     for i in range(len(pwd)):
-        key_c = key[i % len(key)]
-        enc_c = chr((ord(pwd[i]) + ord(key_c)) % 256)
+        enc_c = chr((ord(pwd[i]) + ord(key[i % len(key)])) % 256)
         enc.append(enc_c)
     enc = "".join(enc)
     if sys.version_info[0] == 3:  # for python 3
         enc = enc.encode()
-    enc = base64.urlsafe_b64encode(enc).decode()
+    enc = base64. urlsafe_b64encode(enc).decode()
 
     return [enc, atime, mtime]
 
@@ -167,8 +167,7 @@ def decode(conf, path):  # 解密
 
     dec = []
     for i in range(len(enc)):
-        key_c = key[i % len(key)]
-        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        dec_c = chr((ord(enc[i]) - ord(key[i % len(key)])) % 256)
         dec.append(dec_c)
     dec = "".join(dec)  # 解密后的密码
 
@@ -177,34 +176,32 @@ def decode(conf, path):  # 解密
     if dec.startswith(start) and dec.endswith(end):
         return dec[len(start):-len(end)]
     else:  # 校验失败
-        print("\nThe config file verification failed！\n配置文件校验失败!\n您的配置文件可能已被人偷窥或修改!(放心密码已特殊加密)\nWARN:为了保证账户安全,修改或者移动配置文件均会导致密钥失效!")
+        print("\nconfig file verification failed!")
         return False
 
 
 def key_info(fname):  # 获取每台机器唯一的加密密钥和验证key
-    import uuid
     stats = os.stat(fname)  # 文件属性
-    m = {
-        'path': fname,  # 文件路径hash
-        'mac': uuid.getnode(),  # MAC地址
-        'mode': stats.st_mode,
-        'inode': stats.st_ino,
-        'device': stats.st_dev,
-        'nlink': stats.st_nlink,
-        'user': stats.st_uid,
-        'group': stats.st_gid,
-        'ctime': stats.st_ctime,
-        'atime': stats.st_atime,
-        'mtime': stats.st_mtime,
+    return {
+        'P': fname,  # 文件路径hash
+        'mac': getnode(),  # MAC地址
+        'M': stats.st_mode,
+        'N': stats.st_ino,
+        'D': stats.st_dev,
+        'L': stats.st_nlink,
+        'U': stats.st_uid,
+        'G': stats.st_gid,
+        'CT': stats.st_ctime,
+        'AT': stats.st_atime,
+        'MT': stats.st_mtime,
     }
-    return m
 
 
 def key_gen(h, username):  # 生密钥和首尾校验码
-    h['ctime'] = 0  # ctime always change
+    h['CT'] = 0  # ctime always change
     # print (repr(sorted(h.items())))
-    h = hashlib.md5(repr(sorted(h.items())).encode('utf-8')).hexdigest()
-    key = hashlib.sha512((username + h).encode('utf-8')).hexdigest()
+    h = sha512(repr(sorted(h.items())).encode('utf-8')).hexdigest()
+    key = sha512((username + h).encode('utf-8')).hexdigest()
     hi = str(int(h, 16))
     start, end = h[:int(hi[3])], h[-int(hi[-1]):]
     return [key, start, end]

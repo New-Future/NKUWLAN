@@ -44,37 +44,26 @@ def query(qhost=None):  # 查询
 
     """
     # 主机列表
-    if qhost == None:
-        hostList = host
-    elif type(qhost) is str:
+    if type(qhost) is str:  # 指定主机
         hostList = [qhost]
-    else:
+    elif qhost:  # 数组
         hostList = qhost
+    else:  # 默认
+        hostList = host
     # 逐个查询直到命中
-    result = None
     for h in hostList:
         html = request(h)
-        if html == None:  # 网关异常直接换其他网关
-            continue
-        else:
-            uid = find(html, "uid='")
+        if html:  # 网关异常直接换其他网关
             flow = find(html, "flow='")
-            flow = int(flow) if flow else 0
             fee = find(html, "fee='")
-            fee = int(fee) if flow else 0
-            ipv4 = find(html, "v4ip='")
             result = {
-                'uid': uid,
-                'fee': fee,
-                'flow': flow / 1024,
-                'ipv4': ipv4
+                'fee': fee and int(fee),
+                'flow': flow and int(flow) / 1024,
+                'uid': find(html, "uid='"),
+                'ipv4': find(html, "v4ip='")
             }
-            if uid != None:  # 查询到登录ID返回
+            if result['uid']:  # 查询到登录ID返回
                 return result
-            else:
-                continue
-
-    return result
 
 
 def login(user, pwd):  # 登录
@@ -99,7 +88,7 @@ def login(user, pwd):  # 登录
         url = h + login_path
         request(url, data)
         result = query(h)
-        if result != None and result['uid'] != None:
+        if result and result['uid']:
             return result
 
 
@@ -129,17 +118,14 @@ def find(content, start, endtag="'"):  # 查找
     p = content.find(start)
     if p > 0:
         content = content[len(start) + p:]
-        end = content.find(endtag)
-        f = content[:end]
+        f = content[:content.find(endtag)]
         return f.strip()
 
 
 def request(url, data=None):  # 获取网页
-    global NET_ERROR
     try:
         urllib2.getproxies = lambda: {}
-        req = urllib2.urlopen(url, data)
-        return req.read()
+        return urllib2.urlopen(url, data).read()
     except Exception as e:
         NET_ERROR = e
         return None

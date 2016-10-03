@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from nkuwlan.config import *
-from nkuwlan.gateway import *
+from nkuwlan.config import save_conf, load_conf, delete_conf
+from nkuwlan.gateway import login, logout, query
+import sys
+import time
 
 # START_TAG #
-import sys
-import socket
+from socket import setdefaulttimeout
 
 # 配置
 account = None  # "网关账号[学号]"
@@ -14,27 +15,26 @@ password = None  # 网关登录密码
 cir_time = 60  # 循环时间(s)
 TIMEOUT = 10  # 连接超时时间(s)
 
-socket.setdefaulttimeout(TIMEOUT)
+setdefaulttimeout(TIMEOUT)
 
 
 def getAccount(autoload=True):  # 获取账号
-    import getpass
     global account, password
+    import getpass
     conf = autoload and load_conf()
     if conf:
         account = conf["username"]
         password = conf["password"]
-    account = account or raw_input("input username [ 学号或账号 ]:")
-    password = password or getpass.getpass("input password [ 校园网密码 ]:")
+    else:
+        account = raw_input("input username:")
+        password = getpass.getpass("input password:")
     return login(account, password)
 
 
 def auto():  # 自动登陆
-    global account, password
-
-    socket.setdefaulttimeout(4)
+    setdefaulttimeout(4)
     result = query()
-    socket.setdefaulttimeout(TIMEOUT)
+    setdefaulttimeout(TIMEOUT)
 
     if result and result['uid']:
         print 'ONLine: ', result
@@ -51,21 +51,19 @@ def auto():  # 自动登陆
 
 
 def loop():  # 循环登录
-    import time
-    global cir_time, TIMEOUT, account, password
+    global password
     if not load_conf():
-        socket.setdefaulttimeout(2)
+        setdefaulttimeout(2)
         logout()
 
-    socket.setdefaulttimeout(3)
+    setdefaulttimeout(3)
     while not getAccount():
         password = None
-        print "%s try login fialed!" % account
-        print error()
+        print "%s try login fialed!\n%s" % (account, error())
     else:
-        print "Login SUCCESS! [ 登录成功! ]"
+        print "Login SUCCESS!"
 
-    socket.setdefaulttimeout(TIMEOUT)
+    setdefaulttimeout(TIMEOUT)
     while True:
         print time.ctime()
         if auto():
@@ -76,17 +74,15 @@ def loop():  # 循环登录
 
 def save():  # 保存账号
     conf = {
-        "version": __version__,
         "username": account,
         "password": password,
     }
     result = save_conf(conf)
     if result:
-        print "saved to %s" % result
+        print "saved to " + result
         return True
     else:
         print "save failed!"
-        return False
 
 if __name__ == '__main__':
     print "Login NKUWlan"
