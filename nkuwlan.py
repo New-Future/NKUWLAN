@@ -3,7 +3,7 @@
 __version__ = '1.2.0'
 __author__ = 'New Future'
 
-# THIS FILE BUILD AT--- Tue Oct  4 12:02:08 2016
+# THIS FILE AUTO BUILD AT--- Tue Oct  4 12:22:41 2016 ---
 
 #include form file [nkuwlan/gateway.py] 
 import urllib
@@ -413,12 +413,12 @@ if __name__ == "__main__":
 
     if cmd == "logout":
         logoutAccount()
+    elif cmd == "loop":
+        loop()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
         print __version__
-    elif cmd:
-        loop()
     else:
         auto()

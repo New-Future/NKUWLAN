@@ -103,9 +103,9 @@ def X():print'wait...';P();print'\nlogout success!'
 if __name__=='__main__':
  z=H.argv[1:]and H.argv[1].lower()
  if z=='logout':X()
+ elif z=='loop':an()
  elif z=='-s':
   X()
   if J(False):ao()
  elif z=='-v':print __version__
- elif z:an()
  else:W()
