@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__='1.2.0';__author__='New Future';import urllib;import urllib2 as ac;A=['http://202.113.18.110','http://202.113.18.210'];ap='/';Y=':801/eportal/?c=ACSetting&a=Login';Z=':801/eportal/?c=ACSetting&a=Logout';K=None
+__version__='1.2.1';__author__='New Future';import urllib;import urllib2 as ac;A=['http://202.113.18.110','http://202.113.18.210'];ap='/';Y=':801/eportal/?c=ACSetting&a=Login';Z=':801/eportal/?c=ACSetting&a=Logout';K=None
 def L(v=None):
  if type(v)is str:B=[v]
  elif v:B=v
