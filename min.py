@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__='1.1.2';__author__='New Future';import urllib2 as ac;import urllib;A=['http://202.113.18.110','http://202.113.18.210'];ap='/';Y=':801/eportal/?c=ACSetting&a=Login';Z=':801/eportal/?c=ACSetting&a=Logout';K=None
+__version__='1.2.0';__author__='New Future';import urllib;import urllib2 as ac;A=['http://202.113.18.110','http://202.113.18.210'];ap='/';Y=':801/eportal/?c=ACSetting&a=Login';Z=':801/eportal/?c=ACSetting&a=Logout';K=None
 def L(v=None):
  if type(v)is str:B=[v]
  elif v:B=v
@@ -24,7 +24,7 @@ def find(r,g,ab="'"):
 def C(D,q=None):
  try:ac.getproxies=lambda:{};return ac.urlopen(D,q).read()
  except Exception,s:K=s;return None
-import os as f;import json as ae;import sys as H;import base64 as ah;import time as G;from hashlib import sha512 as al;from uuid import getnode as ar;from distutils.version import StrictVersion as ai;_a=f.path.expanduser('~');Q=[_a+'/.nkuwlan/conf.json',_a+'/.nkuwlan.json','/etc/nkuwlan/conf.json']
+import base64 as ah;import json as ae;import os as f;import sys as H;import time as G;from distutils.version import StrictVersion as ai;from hashlib import sha512 as al;from uuid import getnode as ar;_a=f.path.expanduser('~');Q=[_a+'/.nkuwlan/conf.json',_a+'/.nkuwlan.json','/etc/nkuwlan/conf.json']
 def R(a=None):
  a=F(a)
  if a:
@@ -106,6 +106,6 @@ if __name__=='__main__':
  elif z=='-s':
   X()
   if J(False):ao()
- elif z=='-v':print'NKUWLAN verison :',__version__
+ elif z=='-v':print __version__
  elif z:an()
  else:W()

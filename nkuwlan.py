@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '1.1.2'
+__version__ = '1.2.0'
 __author__ = 'New Future'
 
-# THIS FILE BUILD AT--- Mon Oct  3 14:46:36 2016
+# THIS FILE BUILD AT--- Tue Oct  4 12:02:08 2016
 
 #include form file [nkuwlan/gateway.py] 
-import urllib2
 import urllib
+import urllib2
 
 # 网关 地址
 host = ['http://202.113.18.110', 'http://202.113.18.210']
@@ -124,14 +124,16 @@ def request(url, data=None):  # 获取网页
 
 
 #include form file [nkuwlan/config.py] 
-import os
-import json
-import sys
 import base64
+import json
+import os
+import sys
 import time
+from distutils.version import StrictVersion
 from hashlib import sha512
 from uuid import getnode
-from distutils.version import StrictVersion
+
+
 
 _user_path = os.path.expanduser('~')
 pathlist = [
@@ -408,14 +410,14 @@ def logoutAccount():
 
 if __name__ == "__main__":
     cmd = sys.argv[1:] and sys.argv[1].lower()
-    
+
     if cmd == "logout":
         logoutAccount()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
-        print "NKUWLAN verison :",__version__
+        print __version__
     elif cmd:
         loop()
     else:
