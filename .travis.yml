@@ -1,36 +1,63 @@
 language: python
 
+#cahce pip files
+cache:
+  - pip
+
 git:
   depth: 1
+
+branches:
+  only:
+    - master
 
 env:
  global:
   - GH_REF: "NewFuture/NKUWLAN.git"
+  - GIT_URL: "https://${GH_TOKEN}@github.com/${GH_REF}"
   - BUILD_PATH: "build/"
   - NAME: "From-Travis-CI"
   - EMAIL: "github@newfuture.cc"
   - EMOJI: "'eval curl -sL https://newfuture.github.io/emoji/e.sh|bash'"
 
-before_script:
-  - echo $ID_RSA>t.rsa &&base64 -d t.rsa>~/.ssh/id_rsa &&rm t.rsa &&chmod 600 ~/.ssh/id_rsa
-  - git config --global user.name $NAME
-  - git config --global user.email $EMAIL
-  - git clone -b build "git@github.com:${GH_REF}" ${BUILD_PATH}
+# 安装mimipy
+install:
   - pip install minipy-ppf
 
-script:
-  - ./build.py ${BUILD_PATH}nkuwlan.py && minipy -D -R --noselftest -o ${BUILD_PATH}min.py ${BUILD_PATH}nkuwlan.py
-  - python -m py_compile ${BUILD_PATH}nkuwlan.py  # compile to check syntax
-  - cd ${BUILD_PATH} && eval $(ssh-agent)
-  - git commit -am "`$EMOJI` build from push of master `$EMOJI`" && git push -f "git@github.com:${GH_REF}" build:build
+# 配置git环境
+before_script:
+  # echo $ID_RSA>t.rsa &&base64 -d t.rsa>~/.ssh/id_rsa &&rm t.rsa &&chmod 600 ~/.ssh/id_rsa
+  - git config --global user.name $NAME
+  - git config --global user.email $EMAIL
+  - git clone -b build "${GIT_URL}" ${BUILD_PATH}
 
+# 编译，检查，压缩，发布
+script:
+  - ./build.py ${BUILD_PATH}nkuwlan.py && cd ${BUILD_PATH}
+  - python -m py_compile nkuwlan.py && minipy -D -R --noselftest -o min.py nkuwlan.py
+  - python -m py_compile min.py && git commit -am "`$EMOJI` build from master push `$EMOJI`"
+  - git push -f -q "${GIT_URL}" build:build
+
+# 更新submodules
 after_success:
   - git checkout gh-pages
   - git submodule update --init --recursive
   - git submodule foreach --recursive git pull origin build
   - git commit -am "`$EMOJI` Auto update git Submodule of build"
-  - git push "git@github.com:${GH_REF}" gh-pages:gh-pages
+  - git push -q "${GIT_URL}" gh-pages:gh-pages
 
-branches:
-  only:
-    - master
+
+# 自动release
+
+before_deploy:
+  - "git checkout build"
+
+deploy:
+  provider: releases
+  api_key: "${GH_TOKEN}"
+  file:
+    - "nkuwlan.py"
+    - "min.py"
+  skip_cleanup: true
+  on:
+    tags: true
