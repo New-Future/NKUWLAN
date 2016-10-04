@@ -12,13 +12,13 @@ if __name__ == "__main__":
 
     if cmd == "logout":
         logoutAccount()
+    elif cmd == "loop":
+        loop()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
         print __version__
-    elif cmd:
-        loop()
     else:
         auto()
 '''
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     print "building to: [%s] ..." % output_file
     output = open(output_file, 'w')
     INCLUDE(output, "nkuwlan/__init__.py", start_tag=None, end_tag="__name__")
-    output.write('# THIS FILE BUILD AT--- %s\n' % (time.ctime()))
+    output.write('# THIS FILE AUTO BUILD AT--- %s ---\n' % (time.ctime()))
     INCLUDE(output, "nkuwlan/gateway.py")
     INCLUDE(output, "nkuwlan/config.py")
     INCLUDE(output, "login.py", '# START_TAG #')
