@@ -11,18 +11,20 @@
 '''
 # TODO 自动更新配置
 
-__version__ = '1.1.2'
 __author__ = 'New Future'
 __all__ = ["load_conf", "save_conf", "delete_conf"]
+from __init__ import __version__
 
-import os
-import json
-import sys
 import base64
+import json
+import os
+import sys
 import time
+from distutils.version import StrictVersion
 from hashlib import sha512
 from uuid import getnode
-from distutils.version import StrictVersion
+
+
 
 _user_path = os.path.expanduser('~')
 pathlist = [

@@ -9,14 +9,14 @@ import sys
 main = '''
 if __name__ == "__main__":
     cmd = sys.argv[1:] and sys.argv[1].lower()
-    
+
     if cmd == "logout":
         logoutAccount()
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
     elif cmd == "-v":
-        print "NKUWLAN verison :",__version__
+        print __version__
     elif cmd:
         loop()
     else:

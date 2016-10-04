@@ -10,6 +10,7 @@ git:
 branches:
   only:
     - master
+    - /^[vV](\d+\.){1,3}\d+/
 
 env:
  global:

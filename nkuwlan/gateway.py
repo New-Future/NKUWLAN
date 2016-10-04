@@ -4,19 +4,18 @@
 '''
 南开网关(NKU_WLAN)操作pyhton核心库，包括：登录，查询，注销
 the lib for NKU Gateway,Contains Login，Query，and Logout
-@version: 1.0.0
+@version: 1.2.0
 @author: New Future
 '''
 
 # TODO Python3 兼容.
 # TODO 多线程或者异步请求
 
-__version__ = '1.0.0'
 __author__ = 'New Future'
 __all__ = ["login", "logout", "query", "error"]
 
-import urllib2
 import urllib
+import urllib2
 
 # 网关 地址
 host = ['http://202.113.18.110', 'http://202.113.18.210']
