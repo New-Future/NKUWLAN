@@ -19,6 +19,7 @@ env:
   - BUILD_PATH: "build/"
   - NAME: "From-Travis-CI"
   - EMAIL: "github@newfuture.cc"
+  - CHANGE: "'git status min.py -s'"
   - EMOJI: "'eval curl -sL https://newfuture.github.io/emoji/e.sh|bash'"
 
 # 安装mimipy
@@ -34,18 +35,27 @@ before_script:
 
 # 编译，检查，压缩，发布
 script:
-  - ./build.py ${BUILD_PATH}nkuwlan.py && cd ${BUILD_PATH}
-  - python -m py_compile nkuwlan.py && minipy -D -R --noselftest -o min.py nkuwlan.py
-  - python -m py_compile min.py && git commit -am "`$EMOJI` build from master push `$EMOJI`"
-  - git push -f -q "${GIT_URL}" build:build
+  # build
+  - ./build.py ${BUILD_PATH}/nkuwlan.py && cd ${BUILD_PATH}
+  # check syntax and minify
+  - python -m py_compile nkuwlan.py
+      && minipy -D -R --noselftest -o min.py nkuwlan.py
+      && python -m py_compile min.py
+  # push when changed
+  - if [[ `$CHANGE` ]];then
+      git commit -am "`$EMOJI` Auto Build"
+      && git push -fq ${GIT_URL} build:build;
+    fi
 
-# 更新submodules
+# 同步更新 submodules
 after_success:
-  - git checkout gh-pages
-  - git submodule update --init --recursive
-  - git submodule foreach --recursive git pull origin build
-  - git commit -am "`$EMOJI` Auto update git Submodule of build"
-  - git push -q "${GIT_URL}" gh-pages:gh-pages
+  - if [[ ! `git status -s` ]];then
+      git checkout gh-pages
+      && git submodule update --init --recursive
+      && git submodule foreach --recursive git pull origin build
+      && git commit -am "`$EMOJI` Auto update Submodule"
+      && git push -q "${GIT_URL}" gh-pages:gh-pages;
+    fi
 
 
 # 自动release
