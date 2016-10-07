@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 __author__ = 'New Future'
 
-# THIS FILE AUTO BUILD AT--- Tue Oct  4 12:36:08 2016 ---
+# THIS FILE AUTO BUILD AT--- Fri Oct  7 13:43:41 2016 ---
 
 #include form file [nkuwlan/gateway.py] 
 import urllib
@@ -134,7 +134,6 @@ from hashlib import sha512
 from uuid import getnode
 
 
-
 _user_path = os.path.expanduser('~')
 pathlist = [
     _user_path + '/.nkuwlan/conf.json',
@@ -163,13 +162,14 @@ def load_conf(fname=None):
     fname = get_conf_file(fname)
     if fname:
         try:
+            info = key_info(fname)
             with open(fname, 'r') as configure_file:
                 conf = json.load(configure_file)
-                if "version" in conf:  # 包含version 解密
-                    conf["password"] = decode(conf, fname)
-                    if not conf["password"]:
-                        return False
-                return conf
+                conf["password"] = decode_password(conf, info)
+                if not conf["password"]:
+                    return False
+            os.utime(fname, (info['AT'], info['MT']))  # 跟新文件校验时间戳
+            return conf
         except Exception as e:
             print('load config failed: %s' % e)
             return False
@@ -204,7 +204,7 @@ def save_conf(conf, fname=None):  # 保存配置
                 os.mknod(fname, 0o600)
 
         conf['version'] = __version__
-        conf["password"], atime, mtime = encode(conf, fname)
+        conf["password"], atime, mtime = encode_password(conf, fname)
 
         with open(fname, 'w') as f:
             f.write(json.dumps(conf))
@@ -244,7 +244,7 @@ def get_conf_file(fname=None):  # 获取配置文件
             return fname
 
 
-def encode(conf, path):  # 加密
+def encode_password(conf, path):  # 加密
     h = key_info(path)
     atime, mtime = round(time.time()) + 10, round(h['CT'])  # 修改文件时间
     h['AT'], h['MT'] = float(atime), float(mtime)
@@ -263,12 +263,12 @@ def encode(conf, path):  # 加密
     return [enc, atime, mtime]
 
 
-def decode(conf, path):  # 解密
-    if StrictVersion(conf['version']) < StrictVersion('1.0.0'):
+def decode_password(conf, info):  # 解密
+
+    if not 'version' in conf or StrictVersion(conf['version']) < StrictVersion('1.0.0'):
         return conf['password']
     # 计算唯一加密密钥
-    h = key_info(path)
-    key, start, end = key_gen(h, conf['username'])
+    key, start, end = key_gen(info, conf['username'])
 
     # 加密后密码
     enc = conf['password'].encode()
@@ -338,6 +338,7 @@ def getAccount(autoload=True):  # 获取账号
         account = conf["username"]
         password = conf["password"]
     else:
+        print sys.argv[0], "-s to save"
         account = raw_input("input username:")
         password = getpass.getpass("input password:")
     return login(account, password)
@@ -391,7 +392,7 @@ def save():  # 保存账号
     }
     result = save_conf(conf)
     if result:
-        print "saved to " + result
+        print "saved to", result
         return True
     else:
         print "save failed!"
@@ -402,9 +403,9 @@ def save():  # 保存账号
 
 
 def logoutAccount():
-    print "wait..."
+    print "logout..."
     logout()
-    print '\nlogout success!'
+    print 'Done!'
 
 
 
