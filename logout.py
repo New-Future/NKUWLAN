@@ -7,9 +7,9 @@ from nkuwlan.gateway import logout
 
 
 def logoutAccount():
-    print "wait..."
+    print "logout..."
     logout()
-    print '\nlogout success!'
+    print 'Done!'
 
 
 if __name__ == '__main__':

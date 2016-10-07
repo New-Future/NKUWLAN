@@ -26,6 +26,7 @@ def getAccount(autoload=True):  # 获取账号
         account = conf["username"]
         password = conf["password"]
     else:
+        print sys.argv[0], "-s to save"
         account = raw_input("input username:")
         password = getpass.getpass("input password:")
     return login(account, password)
@@ -79,7 +80,7 @@ def save():  # 保存账号
     }
     result = save_conf(conf)
     if result:
-        print "saved to " + result
+        print "saved to", result
         return True
     else:
         print "save failed!"
