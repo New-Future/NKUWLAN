@@ -18,7 +18,7 @@ import urllib
 import urllib2
 
 # 网关 地址
-host = ['http://202.113.18.110', 'http://202.113.18.210']
+host = ['http://202.113.18.106']
 # url路径
 query_path = '/'
 login_path = ':801/eportal/?c=ACSetting&a=Login'
