@@ -3,14 +3,14 @@
 __version__ = '1.2.2'
 __author__ = 'New Future'
 
-# THIS FILE AUTO BUILD AT--- Fri Oct  7 13:43:41 2016 ---
+# THIS FILE AUTO BUILD AT--- Sat Oct 22 07:31:26 2016 ---
 
 #include form file [nkuwlan/gateway.py] 
 import urllib
 import urllib2
 
 # 网关 地址
-host = ['http://202.113.18.110', 'http://202.113.18.210']
+host = ['http://202.113.18.106']
 # url路径
 query_path = '/'
 login_path = ':801/eportal/?c=ACSetting&a=Login'

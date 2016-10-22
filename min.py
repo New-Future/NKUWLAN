@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__='1.2.2';__author__='New Future';import urllib;import urllib2 as ad;C=['http://202.113.18.110','http://202.113.18.210'];at='/';Z=':801/eportal/?c=ACSetting&a=Login';aa=':801/eportal/?c=ACSetting&a=Logout';L=None
+__version__='1.2.2';__author__='New Future';import urllib;import urllib2 as ad;C=['http://202.113.18.106'];at='/';Z=':801/eportal/?c=ACSetting&a=Login';aa=':801/eportal/?c=ACSetting&a=Logout';L=None
 def M(w=None):
  if type(w)is str:D=[w]
  elif w:D=w
