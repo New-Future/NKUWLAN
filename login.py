@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nkuwlan.config import save_conf, load_conf, delete_conf
-from nkuwlan.gateway import login, logout, query
+from nkuwlan.gateway import login, logout, query, error
 import sys
 import time
 
