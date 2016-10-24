@@ -5,7 +5,7 @@ cache:
   - pip
 
 git:
-  depth: 1
+  depth: 2
 
 branches:
   only:
@@ -74,3 +74,8 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
+
+notifications:
+  email:
+    on_failure: change
+    on_success: change
