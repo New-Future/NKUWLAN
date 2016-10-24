@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '2.0.2'
+__version__ = '2.0.0'
 __author__ = 'New Future'
 
-# THIS FILE AUTO BUILD AT--- Mon Oct 24 04:10:32 2016 ---
+# THIS FILE AUTO BUILD AT--- Mon Oct 24 04:18:04 2016 ---
 
 #include form file [nkuwlan/gateway.py] 
 import urllib
