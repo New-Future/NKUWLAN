@@ -423,3 +423,12 @@ Small Device Styles
   }
 
 }
+
+/**/
+a,code{
+  word-wrap: break-word;
+}
+.inner{
+  padding: 2em;
+  max-width: 1020px;
+}
