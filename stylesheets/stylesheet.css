@@ -438,3 +438,6 @@ ul{
 li{
   margin-left: 2em; 
 }
+header,footer{
+  text-align: center;
+}
