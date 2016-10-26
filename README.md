@@ -4,7 +4,7 @@
 ## 加入系统命令(NKUWLAN一键登录)
 [build 分支](https://github.com/NewFuture/NKUWLAN/tree/build)会根据maste分支的提交自动编译单文件版本和[压缩版](https://github.com/NewFuture/NKUWLAN/blob/build/min.py)可以直接下载使用
 ```
-sudo curl http://nkuwlan.newfuture.cc/code/min.py -#Lo /usr/bin/nkuwlan && sudo chmod +x /usr/bin/nkuwlan
+sudo curl http://nkuwlan.newfuture.cc/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
 ```bash
