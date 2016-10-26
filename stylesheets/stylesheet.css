@@ -432,3 +432,9 @@ a,code{
   padding: 2em;
   max-width: 1020px;
 }
+ul{
+  padding-left: 2em;
+}
+li{
+  margin-left: 2em; 
+}
