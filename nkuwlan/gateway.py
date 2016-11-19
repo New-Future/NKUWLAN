@@ -6,28 +6,32 @@
 the lib for NKU Gateway,Contains Login，Query，and Logout
 @version: 1.2.0
 @author: New Future
+@todo: 多线程或者异步请求
 '''
-
-# TODO Python3 兼容.
-# TODO 多线程或者异步请求
 
 __author__ = 'New Future'
 __all__ = ["login", "logout", "query", "error"]
 
-import urllib
-import urllib2
+try:
+    # from urllib2 as urlopen
+    import urllib2 as req
+    from urllib import urlencode
+except ImportError:
+    # python 3
+    import urllib.request as req
+    from urllib.parse import urlencode
 
 # 网关 地址
-host = ['http://202.113.18.106']
+HOST = ('http://202.113.18.106',)
 # url路径
-query_path = '/'
-login_path = ':801/eportal/?c=ACSetting&a=Login'
-logout_path = ':801/eportal/?c=ACSetting&a=Logout'
+QUERY_PATH = '/'
+LOGIN_PATH = ':801/eportal/?c=ACSetting&a=Login'
+LOGOUT_PATH = ':801/eportal/?c=ACSetting&a=Logout'
 # 错误信息
 NET_ERROR = None
 
 
-def query(qhost=None):  # 查询
+def query(*qhost):  # 查询
     """query info from NKU_WLAN.
 
     查询账号信息和登录状态
@@ -43,15 +47,12 @@ def query(qhost=None):  # 查询
 
     """
     # 主机列表
-    if type(qhost) is str:  # 指定主机
-        hostList = [qhost]
-    elif qhost:  # 数组
-        hostList = qhost
-    else:  # 默认
-        hostList = host
+    if len(qhost) <= 0:
+        # 指定主机使用默认
+        qhost = HOST
     # 逐个查询直到命中
-    for h in hostList:
-        html = request(h)
+    for host in qhost:
+        html = request(host)
         if html:  # 网关异常直接换其他网关
             flow = find(html, "flow='")
             fee = find(html, "fee='")
@@ -65,14 +66,15 @@ def query(qhost=None):  # 查询
                 return result
 
 
-def login(user, pwd):  # 登录
+def login(user, pwd, internal=0):  # 登录
     """login NKU_WLAN.
 
     登录网关
 
     Args:
         user: 登录账号 login account .
-        pwd:登录密码 password.
+        pwd: 登录密码 password.
+        internal: 是否只登录内网
 
     Returns:
         登录成功返回字典，显示账号当前信息；
@@ -81,12 +83,15 @@ def login(user, pwd):  # 登录
     Raises:
 
     """
-    data = {'DDDDD': user, 'upass': pwd}
-    data = urllib.urlencode(data)
-    for h in host:
-        url = h + login_path
+    data = {'upass': pwd}
+    if internal:
+        data.update(DDDDD='_' + user, login_nei=1)
+    else:
+        data['DDDDD'] = user
+    for host in HOST:
+        url = host + LOGIN_PATH
         request(url, data)
-        result = query(h)
+        result = query(host)
         if result and result['uid']:
             return result
 
@@ -96,8 +101,8 @@ def logout():  # 注销
 
     注销网关尝试host列表的所有网关记录，一一注销
     """
-    for h in host:
-        request(h + logout_path)
+    for host in HOST:
+        request(host + LOGOUT_PATH)
 
 
 def error():  # 获取错误信息
@@ -108,27 +113,34 @@ def error():  # 获取错误信息
     Returns:
         Exception NET_ERROR
         未发生错误返回 None
-
     """
     return NET_ERROR
 
 
 def find(content, start, endtag="'"):  # 查找
-    p = content.find(start)
-    if p > 0:
-        content = content[len(start) + p:]
-        f = content[:content.find(endtag)]
-        return f.strip()
+    """find string in html
+        查找文档中start 和 end 之间的的内容
+    Returns:
+       string
+    """
+    pos = content.find(start)
+    if pos > 0:
+        content = content[len(start) + pos:]
+        return content[:content.find(endtag)].strip()
 
 
-def request(url, data=None):  # 获取网页
+def request(url, data=None, code='gb2312'):  # 获取网页
+    """ resquet a url
+        发送请求
+    """
     try:
-        urllib2.getproxies = lambda: {}
-        return urllib2.urlopen(url, data).read()
-    except Exception as e:
-        NET_ERROR = e
+        data = data and urlencode(data).encode()
+        req.getproxies = lambda: {}
+        return req.urlopen(url, data).read().decode(code)
+    except Exception as err:
+        NET_ERROR = err
         return None
 
 
 if __name__ == '__main__':
-    print(query(host))
+    print(query())
