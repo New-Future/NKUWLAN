@@ -1,112 +1,114 @@
 #!/usr/bin/env python
-__version__='2.1.0';__author__='New Future'
-try:import urllib2 as C;from urllib import urlencode as az
-except ImportError:import urllib.request as C;from urllib.parse import urlencode as az
-D='http://202.113.18.106',;ay='/';ac=':801/eportal/?c=ACSetting&a=Login';ad=':801/eportal/?c=ACSetting&a=Logout';M=None
-def N(*E):
-	if len(E)<=0:E=D
-	for q in E:
-		t=F(q)
-		if t:
-			O=find(t,"flow='");P=find(t,"fee='");d={'fee':P and int(P),'flow':O and int(O)/1024,'uid':find(t,"uid='"),'ipv4':find(t,"v4ip='")}
+__version__='2.1.2';__author__='New Future'
+try:import urllib2 as E;from urllib import urlencode as ay
+except ImportError:import urllib.request as E;from urllib.parse import urlencode as ay
+F='http://202.113.18.106',;ax='/';ac=':801/eportal/?c=ACSetting&a=Login';ad=':801/eportal/?c=ACSetting&a=Logout';O=None
+def P(*G):
+	if len(G)<=0:G=F
+	for q in G:
+		u=H(q)
+		if u:
+			Q=find(u,"flow='");R=find(u,"fee='");d={'fee':R and int(R),'flow':Q and int(Q)/1024,'uid':find(u,"uid='"),'ipv4':find(u,"v4ip='")}
 			if d['uid']:return d
-def Q(R,x,ae=0):
-	k={'upass':x}
-	if ae:k.update(DDDDD='_'+R,login_nei=1)
-	else:k['DDDDD']=R
-	for q in D:
-		G=q+ac;F(G,k);d=N(q)
+def S(T,y,internal=0):
+	k={'upass':y}
+	if internal:k.update(DDDDD='_'+T,login_nei=1)
+	else:k['DDDDD']=T
+	for q in F:
+		I=q+ac;H(I,k);d=P(q)
 		if d and d['uid']:return d
-def S():
-	for q in D:F(q+ad)
-def error():return M
-def find(u,h,af="'"):
-	T=u.find(h)
-	if T>0:u=u[len(h)+T:];return u[:u.find(af)].strip()
-def F(G,k=None,ag='gb2312'):
-	try:k=k and az(k).encode();C.getproxies=lambda:{};return C.urlopen(G,k).read().decode(ag)
-	except Exception,ah:M=ah;return None
-import base64 as ap;import json as aj;import os as g;import sys as A;import time as J;from distutils.version import StrictVersion as aq;from hashlib import sha512 as au;from uuid import getnode as aB;_a=g.path.expanduser('~');U=[_a+'/.nkuwlan/conf.json',_a+'/.nkuwlan.json','/etc/nkuwlan/conf.json']
-def V(a=None):
-	a=H(a)
+def U():
+	for q in F:H(q+ad)
+def error():return O
+def find(v,h,ae="'"):
+	V=v.find(h)
+	if V>0:v=v[len(h)+V:];return v[:v.find(ae)].strip()
+def H(I,k=None,af='gb2312'):
+	try:k=k and ay(k).encode();E.getproxies=lambda:{};return E.urlopen(I,k).read().decode(af)
+	except Exception,ag:O=ag;return None
+import base64 as ao;import json as ai;import os as g;import sys as B;import time as L;from distutils.version import StrictVersion as ap;from hashlib import sha512 as at;from uuid import getnode as aA;_a=g.path.expanduser('~');W=[_a+'/.nkuwlan/conf.json',_a+'/.nkuwlan.json','/etc/nkuwlan/conf.json']
+def X(a=None):
+	a=J(a)
 	if a:
 		try:
-			v=W(a)
-			with open(a,'r')as ai:
-				b=aj.load(ai);b['password']=ak(b,v)
+			w=Y(a)
+			with open(a,'r')as ah:
+				b=ai.load(ah);b['password']=aj(b,w)
 				if not b['password']:return False
-			g.utime(a,(v['AT'],v['MT']));return b
-		except Exception,I:print'load config failed: %s'%I;return False
-def al(b,a=None):
-	a=H(a)or U[0];dir=g.path.dirname(a)
+			g.utime(a,(w['AT'],w['MT']));return b
+		except Exception,K:print'load config failed: %s'%K;return False
+def ak(b,a=None):
+	a=J(a)or W[0];dir=g.path.dirname(a)
 	try:
 		if not g.path.exists(dir):g.mkdir(dir,448)
 		if not g.path.isfile(a):
 			if g.name=='nt':open(a,'w').close()
 			else:g.mknod(a,384)
-		b['version']=__version__;b['password'],y,z=am(b,a)
-		with open(a,'w')as an:an.write(aj.dumps(b))
-		g.utime(a,(y,z));return a
-	except Exception,I:print'save error: %s'%I;return False
-def aA(a=None):
-	a=H(a)
+		b['version']=__version__;b['password'],z,A=al(b,a)
+		with open(a,'w')as am:am.write(ai.dumps(b))
+		g.utime(a,(z,A));return a
+	except Exception,K:print'save error: %s'%K;return False
+def az(a=None):
+	a=J(a)
 	if a:g.remove(a);return a
-def H(a=None):
+def J(a=None):
 	if a:return a
-	for a in U:
+	for a in W:
 		if g.path.isfile(a):return a
-def am(b,path):
-	f=W(path);y,z=round(J.time())+10,round(f['CT']);f['AT'],f['MT']=float(y),float(z);n,h,r=X(f,b['username']);x=h+b['password']+r;e=[]
-	for i in range(len(x)):ao=chr((ord(x[i])+ord(n[i%len(n)]))%256);e.append(ao)
+def al(b,path):
+	f=Y(path);z,A=round(L.time())+10,round(f['CT']);f['AT'],f['MT']=float(z),float(A);n,h,r=Z(f,b['username']);y=h+b['password']+r;e=[]
+	for i in range(len(y)):an=chr((ord(y[i])+ord(n[i%len(n)]))%256);e.append(an)
 	e=''.join(e)
-	if A.version_info[0]==3:e=e.encode()
-	e=ap.urlsafe_b64encode(e).decode();return[e,y,z]
-def ak(b,v):
-	if not'version'in b or aq(b['version'])<aq('1.0.0'):return b['password']
-	n,h,r=X(v,b['username']);e=b['password'].encode();e=ap.urlsafe_b64decode(e)
-	if A.version_info[0]==3:e=e.decode()
+	if B.version_info[0]==3:e=e.encode()
+	e=ao.urlsafe_b64encode(e).decode();return[e,z,A]
+def aj(b,w):
+	if not'version'in b or ap(b['version'])<ap('1.0.0'):return b['password']
+	n,h,r=Z(w,b['username']);e=b['password'].encode();e=ao.urlsafe_b64decode(e)
+	if B.version_info[0]==3:e=e.decode()
 	s=[]
-	for i in range(len(e)):ar=chr((ord(e[i])-ord(n[i%len(n)]))%256);s.append(ar)
+	for i in range(len(e)):aq=chr((ord(e[i])-ord(n[i%len(n)]))%256);s.append(aq)
 	s=''.join(s)
 	if s.startswith(h)and s.endswith(r):return s[len(h):-len(r)]
 	else:print'\nconfig file verification failed!';return False
-def W(a):j=g.stat(a);return{'P':a,'mac':aB(),'M':j.st_mode,'N':j.st_ino,'D':j.st_dev,'L':j.st_nlink,'U':j.st_uid,'G':j.st_gid,'CT':j.st_ctime,'AT':j.st_atime,'MT':j.st_mtime}
-def X(f,at):f['CT']=0;f=au(repr(sorted(f.items())).encode('utf-8')).hexdigest();n=au((at+f).encode('utf-8')).hexdigest();Y=str(int(f,16));h,r=f[:int(Y[3])],f[-int(Y[-1]):];return[n,h,r]
-from socket import setdefaulttimeout as w;o=None;l=None;Z=60;K=10;w(K)
-def L(av=True):
-	global o,l;import getpass as aC;b=av and V()
+def Y(a):j=g.stat(a);return{'P':a,'mac':aA(),'M':j.st_mode,'N':j.st_ino,'D':j.st_dev,'L':j.st_nlink,'U':j.st_uid,'G':j.st_gid,'CT':j.st_ctime,'AT':j.st_atime,'MT':j.st_mtime}
+def Z(f,ar):f['CT']=0;f=at(repr(sorted(f.items())).encode('utf-8')).hexdigest();n=at((ar+f).encode('utf-8')).hexdigest();aa=str(int(f,16));h,r=f[:int(aa[3])],f[-int(aa[-1]):];return[n,h,r]
+from socket import setdefaulttimeout as x;o=None;l=None;ab=60;M=10;x(M)
+def N(au=True,internal=1):
+	global o,l;import getpass as aB;b=au and X()
 	if b:o=b['username'];l=b['password']
-	else:print A.argv[0],'-s to save';o=raw_input('input username:');l=aC.getpass('input password:')
-	return Q(o,l)
-def aa():
-	w(4);d=N();w(K)
+	else:print B.argv[0],'-s to save';o=raw_input('input username:');l=aB.getpass('input password:')
+	return S(o,l,internal)
+def C(internal=0):
+	x(4);d=P();x(M)
 	if d and d['uid']:print'ONLine: ',d;return True
 	else:
-		print'OFFLine, try login!';L();d=Q(o,l)
+		print'OFFLine, try login!';N(internal=internal);d=S(o,l,internal)
 		if d:print'Login SUCCESS:',d;return True
 		else:return False
-def aw():
+def av():
 	global l
-	if not V():w(2);S()
-	w(3)
-	while not L():l=None;print'%s try login fialed!\n%s'%(o,error())
+	if not X():x(2);U()
+	x(3)
+	while not N():l=None;print'%s try login fialed!\n%s'%(o,error())
 	else:print'Login SUCCESS!'
-	w(K)
+	x(M)
 	while True:
-		print J.ctime()
-		if aa():J.sleep(Z)
-		else:J.sleep(Z/5)
-def ax():
-	b={'username':o,'password':l};d=al(b)
+		print L.ctime()
+		if C():L.sleep(ab)
+		else:L.sleep(ab/5)
+def aw():
+	b={'username':o,'password':l};d=ak(b)
 	if d:print'saved to',d;return True
 	else:print'save failed!'
-def ab():print'logout...';S();print'Done!'
+def D():print'logout...';U();print'Done!'
 if __name__=='__main__':
-	B=A.argv[1:]and A.argv[1].lower()
-	if B=='logout':ab()
-	elif B=='loop':aw()
-	elif B=='-s':
-		ab()
-		if L(False):ax()
-	elif B=='-v':print __version__
-	else:aa()
+	t=B.argv[1:]and B.argv[1].lower()
+	if t=='logout':D()
+	elif t=='loop':av()
+	elif t=='-s':
+		D()
+		if N(False):aw()
+	elif t=='nei':D();C(1)
+	elif t=='wai':D();C()
+	elif t=='-v':print __version__
+	else:C()

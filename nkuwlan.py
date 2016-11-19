@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '2.1.0'
+__version__ = '2.1.2'
 __author__ = 'New Future'
 
-# THIS FILE AUTO BUILD AT--- Sat Nov 19 07:45:25 2016 ---
+# THIS FILE AUTO BUILD AT--- Sat Nov 19 08:23:18 2016 ---
 
 #include form file [nkuwlan/gateway.py] 
 try:
-    # from urllib2 as urlopen
+    # python 2
     import urllib2 as req
     from urllib import urlencode
 except ImportError:
@@ -344,7 +344,7 @@ TIMEOUT = 10  # 连接超时时间(s)
 setdefaulttimeout(TIMEOUT)
 
 
-def getAccount(autoload=True):  # 获取账号
+def getAccount(autoload=True, internal=1):  # 获取账号
     global account, password
     import getpass
     conf = autoload and load_conf()
@@ -355,10 +355,10 @@ def getAccount(autoload=True):  # 获取账号
         print sys.argv[0], "-s to save"
         account = raw_input("input username:")
         password = getpass.getpass("input password:")
-    return login(account, password)
+    return login(account, password, internal)
 
 
-def auto():  # 自动登陆
+def auto(internal=0):  # 自动登陆
     setdefaulttimeout(4)
     result = query()
     setdefaulttimeout(TIMEOUT)
@@ -368,8 +368,8 @@ def auto():  # 自动登陆
         return True
     else:
         print 'OFFLine, try login!'
-        getAccount()
-        result = login(account, password)
+        getAccount(internal=internal)
+        result = login(account, password, internal)
         if result:
             print 'Login SUCCESS:', result
             return True
@@ -433,6 +433,12 @@ if __name__ == "__main__":
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
+    elif cmd == "nei":
+        logoutAccount()
+        auto(1)
+    elif cmd == "wai":
+        logoutAccount()
+        auto()
     elif cmd == "-v":
         print __version__
     else:
