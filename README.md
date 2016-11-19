@@ -16,6 +16,10 @@ nkuwlan
 nkuwlan logout
 #显示版本
 nkuwlan -v
+#仅登录内网
+nkuwlan nei
+#登录外网
+nkuwlan wai
 ```
 ## 临时使用
 
@@ -36,7 +40,7 @@ python nkuwlan.py
 
 ## 多文件【将账号密码编译成二进制】
 
-核心库：
+核心库：(支持 Python2 和 Python3)
 * 网关[nkuwlan/gateway.py](https://github.com/NewFuture/NKUWLAN/blob/master/nkuwlan/gateway.py) 对网关登录查询注销操作封装(可以单独使用)
 * 配置[nkuwlan/config.py](https://github.com/NewFuture/NKUWLAN/blob/master/nkuwlan/config.py) 对配置读取加密存储进行封装
 

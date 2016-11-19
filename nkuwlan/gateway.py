@@ -13,7 +13,7 @@ __author__ = 'New Future'
 __all__ = ["login", "logout", "query", "error"]
 
 try:
-    # from urllib2 as urlopen
+    # python 2
     import urllib2 as req
     from urllib import urlencode
 except ImportError:

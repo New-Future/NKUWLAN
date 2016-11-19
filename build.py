@@ -16,6 +16,12 @@ if __name__ == "__main__":
     elif cmd == "-s":
         logoutAccount()
         if getAccount(False): save()
+    elif cmd == "nei":
+        logoutAccount()
+        auto(1)
+    elif cmd == "wai":
+        logoutAccount()
+        auto()
     elif cmd == "-v":
         print __version__
     else:

@@ -18,7 +18,7 @@ TIMEOUT = 10  # 连接超时时间(s)
 setdefaulttimeout(TIMEOUT)
 
 
-def getAccount(autoload=True):  # 获取账号
+def getAccount(autoload=True, internal=1):  # 获取账号
     global account, password
     import getpass
     conf = autoload and load_conf()
@@ -29,10 +29,10 @@ def getAccount(autoload=True):  # 获取账号
         print sys.argv[0], "-s to save"
         account = raw_input("input username:")
         password = getpass.getpass("input password:")
-    return login(account, password)
+    return login(account, password, internal)
 
 
-def auto():  # 自动登陆
+def auto(internal=0):  # 自动登陆
     setdefaulttimeout(4)
     result = query()
     setdefaulttimeout(TIMEOUT)
@@ -42,8 +42,8 @@ def auto():  # 自动登陆
         return True
     else:
         print 'OFFLine, try login!'
-        getAccount()
-        result = login(account, password)
+        getAccount(internal=internal)
+        result = login(account, password, internal)
         if result:
             print 'Login SUCCESS:', result
             return True
