@@ -7,13 +7,13 @@
 * 下载[此链接支持ipv6下载]完整版(兼容python2和**python3**)
 
 ```bash
-sudo curl http://nkuwlan.newfuture.xyz/code/nkuwaln.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
+sudo curl https://nkuwlan.newfuture.xyz/code/nkuwlan.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
 * 下载[此链接支持ipv6下载]压缩版(仅支持python2)
 
 ```bash
-sudo curl http://nkuwlan.newfuture.xyz/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
+sudo curl https://nkuwlan.newfuture.xyz/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
 ```bash
