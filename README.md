@@ -3,7 +3,16 @@
 
 ## 加入系统命令(NKUWLAN一键登录)
 [build 分支](https://github.com/NewFuture/NKUWLAN/tree/build)会根据maste分支的提交自动编译单文件版本和[压缩版](https://github.com/NewFuture/NKUWLAN/blob/build/min.py)可以直接下载使用
+
+* 下载[此链接支持ipv6下载]完整版(兼容python2和**python3**)
+
+```bash
+sudo curl http://nkuwlan.newfuture.xyz/code/nkuwaln.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
+
+* 下载[此链接支持ipv6下载]压缩版(仅支持python2)
+
+```bash
 sudo curl http://nkuwlan.newfuture.xyz/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
@@ -27,7 +36,7 @@ nkuwlan wai
 wget http://nkuwlan.newfuture.xyz/code/nkuwlan.py
 
 #或者下载min版(不适合修改)
-wget http://nkuwlan.newfuture.xyz/code/nin.py
+#或者wget http://nkuwlan.newfuture.xyz/code/min.py
 
 python nkuwlan.py
 ```
