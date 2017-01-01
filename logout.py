@@ -1,16 +1,20 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # encoding=utf-8
 # coding:utf-8
+from __future__ import print_function
 from nkuwlan.gateway import logout
 
 # START_TAG #
 
 
-def logoutAccount():
-    print "logout..."
+def logout_account():  # 注销
+    '''
+    注销登录
+    '''
+    print("logout...")
     logout()
-    print 'Done!'
+    print('Done!')
 
 
 if __name__ == '__main__':
-    logoutAccount()
+    logout_account()

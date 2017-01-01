@@ -11,9 +11,11 @@
 '''
 # TODO 自动更新配置
 
+from __future__ import print_function
+from . import __version__
+
 __author__ = 'New Future'
 __all__ = ["load_conf", "save_conf", "delete_conf"]
-from __init__ import __version__
 
 # START_TAG #
 import base64
@@ -85,10 +87,10 @@ def save_conf(conf, fname=None):  # 保存配置
     """
 
     fname = get_conf_file(fname) or pathlist[0]
-    dir = os.path.dirname(fname)
+    dirname = os.path.dirname(fname)
     try:
-        if not os.path.exists(dir):
-            os.mkdir(dir, 0o700)
+        if not os.path.exists(dirname):
+            os.mkdir(dirname, 0o700)
         if not os.path.isfile(fname):
             if os.name == 'nt':  # windows
                 open(fname, 'w').close()
@@ -144,7 +146,7 @@ def encode_password(conf, path):  # 加密
 
     pwd = start + conf['password'] + end
     enc = []
-    for i in range(len(pwd)):
+    for i in range(len(pwd)):#range compatible for Python 3
         enc_c = chr((ord(pwd[i]) + ord(key[i % len(key)])) % 256)
         enc.append(enc_c)
     enc = "".join(enc)
@@ -169,7 +171,7 @@ def decode_password(conf, info):  # 解密
         enc = enc.decode()
 
     dec = []
-    for i in range(len(enc)):
+    for i in range(len(enc)):#range compatible for Python 3
         dec_c = chr((ord(enc[i]) - ord(key[i % len(key)])) % 256)
         dec.append(dec_c)
     dec = "".join(dec)  # 解密后的密码

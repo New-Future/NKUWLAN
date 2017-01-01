@@ -1,6 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # coding:utf-8
+
+'''
+生成单文件版脚本
+'''
+
 import time
 import sys
 
@@ -10,27 +15,28 @@ if __name__ == "__main__":
     cmd = sys.argv[1:] and sys.argv[1].lower()
 
     if cmd == "logout":
-        logoutAccount()
+        logout_account()
     elif cmd == "loop":
         loop()
     elif cmd == "-s":
-        logoutAccount()
+        logout_account()
         if getAccount(False): save()
     elif cmd == "nei":
-        logoutAccount()
+        logout_account()
         auto(1)
     elif cmd == "wai":
-        logoutAccount()
+        logout_account()
         auto()
     elif cmd == "-v":
-        print __version__
+        print(__version__)
     else:
         auto()
 '''
 
 
 def include(output, filename, start_tag="import", end_tag="if __name__ == '__main__'"):
-    """include python file
+    """
+    include python file
     """
     with open(filename, 'r') as gateway:
         print 'include:', filename

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '2.1.2'
+from __future__ import print_function
+
+__version__ = '2.2.0'
 __author__ = 'New Future'
 
 __name__ = "nkuwlan"
