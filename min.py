@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-__version__='2.1.2';__author__='New Future'
+from __future__ import print_function;__version__='2.2.0';__author__='New Future'
 try:import urllib2 as E;from urllib import urlencode as ay
 except ImportError:import urllib.request as E;from urllib.parse import urlencode as ay
 F='http://202.113.18.106',;ax='/';ac=':801/eportal/?c=ACSetting&a=Login';ad=':801/eportal/?c=ACSetting&a=Logout';O=None
@@ -36,18 +36,18 @@ def X(a=None):
 				b=ai.load(ah);b['password']=aj(b,w)
 				if not b['password']:return False
 			g.utime(a,(w['AT'],w['MT']));return b
-		except Exception,K:print'load config failed: %s'%K;return False
+		except Exception,K:print('load config failed: %s'%K);return False
 def ak(b,a=None):
-	a=J(a)or W[0];dir=g.path.dirname(a)
+	a=J(a)or W[0];dirname=g.path.dirname(a)
 	try:
-		if not g.path.exists(dir):g.mkdir(dir,448)
+		if not g.path.exists(dirname):g.mkdir(dirname,448)
 		if not g.path.isfile(a):
 			if g.name=='nt':open(a,'w').close()
 			else:g.mknod(a,384)
 		b['version']=__version__;b['password'],z,A=al(b,a)
 		with open(a,'w')as am:am.write(ai.dumps(b))
 		g.utime(a,(z,A));return a
-	except Exception,K:print'save error: %s'%K;return False
+	except Exception,K:print('save error: %s'%K);return False
 def az(a=None):
 	a=J(a)
 	if a:g.remove(a);return a
@@ -69,38 +69,41 @@ def aj(b,w):
 	for i in range(len(e)):aq=chr((ord(e[i])-ord(n[i%len(n)]))%256);s.append(aq)
 	s=''.join(s)
 	if s.startswith(h)and s.endswith(r):return s[len(h):-len(r)]
-	else:print'\nconfig file verification failed!';return False
+	else:print('\nconfig file verification failed!');return False
 def Y(a):j=g.stat(a);return{'P':a,'mac':aA(),'M':j.st_mode,'N':j.st_ino,'D':j.st_dev,'L':j.st_nlink,'U':j.st_uid,'G':j.st_gid,'CT':j.st_ctime,'AT':j.st_atime,'MT':j.st_mtime}
 def Z(f,ar):f['CT']=0;f=at(repr(sorted(f.items())).encode('utf-8')).hexdigest();n=at((ar+f).encode('utf-8')).hexdigest();aa=str(int(f,16));h,r=f[:int(aa[3])],f[-int(aa[-1]):];return[n,h,r]
-from socket import setdefaulttimeout as x;o=None;l=None;ab=60;M=10;x(M)
+from socket import setdefaulttimeout as x
+try:input=raw_input
+except NameError:0
+o=None;l=None;ab=60;M=10;x(M)
 def N(au=True,internal=1):
 	global o,l;import getpass as aB;b=au and X()
 	if b:o=b['username'];l=b['password']
-	else:print B.argv[0],'-s to save';o=raw_input('input username:');l=aB.getpass('input password:')
+	else:print(B.argv[0],'-s to save');o=input('input username:');l=aB.getpass('input password:')
 	return S(o,l,internal)
 def C(internal=0):
 	x(4);d=P();x(M)
-	if d and d['uid']:print'ONLine: ',d;return True
+	if d and d['uid']:print('ONLine: ',d);return True
 	else:
-		print'OFFLine, try login!';N(internal=internal);d=S(o,l,internal)
-		if d:print'Login SUCCESS:',d;return True
+		print('OFFLine, try login!');N(internal=internal);d=S(o,l,internal)
+		if d:print('Login SUCCESS:',d);return True
 		else:return False
 def av():
 	global l
 	if not X():x(2);U()
 	x(3)
-	while not N():l=None;print'%s try login fialed!\n%s'%(o,error())
-	else:print'Login SUCCESS!'
+	while not N():l=None;print('%s try login fialed!\n%s'%(o,error()))
+	else:print('Login SUCCESS!')
 	x(M)
 	while True:
-		print L.ctime()
+		print(L.ctime())
 		if C():L.sleep(ab)
 		else:L.sleep(ab/5)
 def aw():
 	b={'username':o,'password':l};d=ak(b)
-	if d:print'saved to',d;return True
-	else:print'save failed!'
-def D():print'logout...';U();print'Done!'
+	if d:print('saved to',d);return True
+	else:print('save failed!')
+def D():print('logout...');U();print('Done!')
 if __name__=='__main__':
 	t=B.argv[1:]and B.argv[1].lower()
 	if t=='logout':D()
@@ -110,5 +113,5 @@ if __name__=='__main__':
 		if N(False):aw()
 	elif t=='nei':D();C(1)
 	elif t=='wai':D();C()
-	elif t=='-v':print __version__
+	elif t=='-v':print(__version__)
 	else:C()

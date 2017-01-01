@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__version__ = '2.1.2'
+from __future__ import print_function
+
+__version__ = '2.2.0'
 __author__ = 'New Future'
 
-# THIS FILE AUTO BUILD AT--- Sat Nov 19 08:23:18 2016 ---
+# THIS FILE AUTO BUILD AT--- Sun Jan  1 13:37:52 2017 ---
 
 #include form file [nkuwlan/gateway.py] 
 try:
@@ -207,10 +209,10 @@ def save_conf(conf, fname=None):  # 保存配置
     """
 
     fname = get_conf_file(fname) or pathlist[0]
-    dir = os.path.dirname(fname)
+    dirname = os.path.dirname(fname)
     try:
-        if not os.path.exists(dir):
-            os.mkdir(dir, 0o700)
+        if not os.path.exists(dirname):
+            os.mkdir(dirname, 0o700)
         if not os.path.isfile(fname):
             if os.name == 'nt':  # windows
                 open(fname, 'w').close()
@@ -266,7 +268,7 @@ def encode_password(conf, path):  # 加密
 
     pwd = start + conf['password'] + end
     enc = []
-    for i in range(len(pwd)):
+    for i in range(len(pwd)):#range compatible for Python 3
         enc_c = chr((ord(pwd[i]) + ord(key[i % len(key)])) % 256)
         enc.append(enc_c)
     enc = "".join(enc)
@@ -291,7 +293,7 @@ def decode_password(conf, info):  # 解密
         enc = enc.decode()
 
     dec = []
-    for i in range(len(enc)):
+    for i in range(len(enc)):#range compatible for Python 3
         dec_c = chr((ord(enc[i]) - ord(key[i % len(key)])) % 256)
         dec.append(dec_c)
     dec = "".join(dec)  # 解密后的密码
@@ -334,6 +336,10 @@ def key_gen(h, username):  # 生密钥和首尾校验码
 #include form file [login.py] 
 # START_TAG #
 from socket import setdefaulttimeout
+try:
+    input = raw_input
+except NameError:
+    pass
 
 # 配置
 account = None  # "网关账号[学号]"
@@ -352,8 +358,8 @@ def getAccount(autoload=True, internal=1):  # 获取账号
         account = conf["username"]
         password = conf["password"]
     else:
-        print sys.argv[0], "-s to save"
-        account = raw_input("input username:")
+        print (sys.argv[0], "-s to save")
+        account = input("input username:")
         password = getpass.getpass("input password:")
     return login(account, password, internal)
 
@@ -364,14 +370,14 @@ def auto(internal=0):  # 自动登陆
     setdefaulttimeout(TIMEOUT)
 
     if result and result['uid']:
-        print 'ONLine: ', result
+        print('ONLine: ', result)
         return True
     else:
-        print 'OFFLine, try login!'
+        print('OFFLine, try login!')
         getAccount(internal=internal)
         result = login(account, password, internal)
         if result:
-            print 'Login SUCCESS:', result
+            print('Login SUCCESS:', result)
             return True
         else:
             return False
@@ -386,13 +392,13 @@ def loop():  # 循环登录
     setdefaulttimeout(3)
     while not getAccount():
         password = None
-        print "%s try login fialed!\n%s" % (account, error())
+        print ("%s try login fialed!\n%s" % (account, error()))
     else:
-        print "Login SUCCESS!"
+        print ("Login SUCCESS!")
 
     setdefaulttimeout(TIMEOUT)
     while True:
-        print time.ctime()
+        print (time.ctime())
         if auto():
             time.sleep(cir_time)  # 每隔cir_time秒执行一次
         else:
@@ -406,20 +412,23 @@ def save():  # 保存账号
     }
     result = save_conf(conf)
     if result:
-        print "saved to", result
+        print("saved to", result)
         return True
     else:
-        print "save failed!"
+        print ("save failed!")
 
 
 #include form file [logout.py] 
 # START_TAG #
 
 
-def logoutAccount():
-    print "logout..."
+def logout_account():  # 注销
+    '''
+    注销登录
+    '''
+    print("logout...")
     logout()
-    print 'Done!'
+    print('Done!')
 
 
 
@@ -427,19 +436,19 @@ if __name__ == "__main__":
     cmd = sys.argv[1:] and sys.argv[1].lower()
 
     if cmd == "logout":
-        logoutAccount()
+        logout_account()
     elif cmd == "loop":
         loop()
     elif cmd == "-s":
-        logoutAccount()
+        logout_account()
         if getAccount(False): save()
     elif cmd == "nei":
-        logoutAccount()
+        logout_account()
         auto(1)
     elif cmd == "wai":
-        logoutAccount()
+        logout_account()
         auto()
     elif cmd == "-v":
-        print __version__
+        print(__version__)
     else:
         auto()
