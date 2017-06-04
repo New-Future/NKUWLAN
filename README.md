@@ -7,13 +7,13 @@
 * 下载[此链接支持ipv6下载]完整版(兼容python2和**python3**)
 
 ```bash
-sudo curl https://nkuwlan.newfuture.xyz/code/nkuwlan.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
+sudo curl https://newfuture.github.io/NKUWLAN/code/nkuwlan.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
 * 下载[此链接支持ipv6下载]压缩版(仅支持python2)
 
 ```bash
-sudo curl https://nkuwlan.newfuture.xyz/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
+sudo curl https://newfuture.github.io/NKUWLAN/code/min.py -#Lo /usr/local/bin/nkuwlan && sudo chmod +x /usr/local/bin/nkuwlan
 ```
 
 ```bash
@@ -33,10 +33,10 @@ nkuwlan wai
 ## 临时使用
 
 ```bash
-wget http://nkuwlan.newfuture.xyz/code/nkuwlan.py
+wget https://newfuture.github.io/NKUWLAN/code/nkuwlan.py
 
 #或者下载min版(不适合修改)
-#或者wget http://nkuwlan.newfuture.xyz/code/min.py
+#或者wget https://newfuture.github.io/NKUWLAN/code/min.py
 
 python nkuwlan.py
 ```
